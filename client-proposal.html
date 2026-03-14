@@ -751,7 +751,7 @@
                     </div>
                     <div class="hero-meta-item">
                         <span class="label">Delivery</span>
-                        <span class="value">8–10 weeks</span>
+                        <span class="value">1 month</span>
                     </div>
                     <div class="hero-meta-item">
                         <span class="label">Platform</span>
@@ -903,7 +903,7 @@
                                     font-size: 0.68rem;
                                 "
                             >
-                                4
+                                1
                             </div>
                             <h3>Core Monitoring Features</h3>
                         </div>
@@ -1026,7 +1026,7 @@
                                     font-size: 0.68rem;
                                 "
                             >
-                                1
+                                2
                             </div>
                             <h3>Subscription Plans + Billing</h3>
                         </div>
@@ -1041,37 +1041,23 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Tiered subscription plans</td>
-                                        <td>
-                                            <span class="badge-full"
-                                                >✓ Full</span
-                                            >
-                                        </td>
-                                        <td>
-                                            Each plan tier controls the number
-                                            of targets, follower count limits,
-                                            sync frequency, and feature access.
-                                            All configurable.
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td>Payment processing</td>
                                         <td>
                                             <span class="badge-full"
-                                                >✓ Full</span
+                                                >✓ Client prerequisite</span
                                             >
                                         </td>
                                         <td>
-                                            Stripe Checkout. Payment required
-                                            before account creation. Webhook
-                                            confirms payment and unlocks
-                                            registration.
+                                            Handled by the client's existing
+                                            Stripe Checkout flow. Not built
+                                            in this engagement.
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Subscription upgrades and
-                                            cancellations
+                                            Stripe webhook handling — upgrades,
+                                            downgrades, cancellations, failed
+                                            payments
                                         </td>
                                         <td>
                                             <span class="badge-full"
@@ -1079,23 +1065,43 @@
                                             >
                                         </td>
                                         <td>
-                                            Upgrades, downgrades, cancellations,
-                                            and failed payment recovery all
-                                            handled automatically via Stripe.
+                                            Our app receives every Stripe
+                                            subscription event and applies
+                                            the change immediately — plan
+                                            update, access restriction, or
+                                            recovery.
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>Plan enforcement</td>
+                                        <td>Plan limits enforcement</td>
                                         <td>
                                             <span class="badge-full"
                                                 >✓ Full</span
                                             >
                                         </td>
                                         <td>
-                                            All plan limits enforced
-                                            server-side. Downgrading auto-pauses
-                                            any targets that exceed the new
-                                            plan's limits.
+                                            Target count, sync frequency, and
+                                            feature access enforced server-side
+                                            per plan tier. Downgrade
+                                            auto-pauses excess targets
+                                            instantly.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Subscription management UI —
+                                            upgrade, downgrade, cancel
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            One button in the dashboard opens
+                                            a Stripe-hosted billing portal
+                                            where users manage their plan
+                                            directly.
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1115,7 +1121,7 @@
                                     font-size: 0.68rem;
                                 "
                             >
-                                6
+                                3
                             </div>
                             <h3>Notifications</h3>
                         </div>
@@ -1283,9 +1289,8 @@
                     <h2>What Is Out of Scope for This Engagement</h2>
                 </div>
                 <div class="card-body">
-                    <div class="callout green">
-                        <strong>✓ Plan selection page + Stripe payment flow</strong>
-                        — prerequisite, client provides. Must include:
+                    <div class="callout amber">
+                        <strong>Client provides — Plan selection page + Stripe payment flow</strong>
                         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
                             <li>Stripe account with subscription products and prices configured</li>
                             <li>Plan selection / pricing page with Stripe Checkout</li>
@@ -1293,9 +1298,8 @@
                             <li>On successful payment: Stripe webhook pointed at our <code>/api/webhook</code> endpoint</li>
                         </ul>
                     </div>
-                    <div class="callout green">
-                        <strong>✓ Login + registration pages</strong>
-                        — prerequisite, client provides. Must include:
+                    <div class="callout amber">
+                        <strong>Client provides — Login + registration pages</strong>
                         <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
                             <li>Email/password authentication</li>
                             <li>Registration page that creates the user account</li>
@@ -1437,7 +1441,7 @@
                             <div class="bh-label">Fixed Price</div>
                             <div class="bh-amount">$1,600</div>
                             <div class="bh-sub">
-                                Complete delivery · one contract · 8–10 weeks
+                                Complete delivery · one contract · 1 month
                             </div>
                         </div>
                     </div>
@@ -1575,7 +1579,7 @@
                                 </tr>
                                 <tr>
                                     <td>Delivery timeline</td>
-                                    <td>8–10 weeks</td>
+                                    <td>1 month</td>
                                 </tr>
                                 <tr>
                                     <td>Modules delivered</td>
