@@ -927,10 +927,11 @@
                                             >
                                         </td>
                                         <td>
-                                            HikerAPI fetches follower and
-                                            following lists. Handles anti-bot,
-                                            proxies, and rate limiting on their
-                                            end — nothing to build or maintain.
+                                            A managed Instagram data service
+                                            fetches follower and following
+                                            lists — handles anti-bot, proxies,
+                                            and rate limiting. Nothing to
+                                            build or maintain.
                                         </td>
                                     </tr>
                                     <tr>
@@ -1181,62 +1182,36 @@
                         <table class="cost-table">
                             <thead>
                                 <tr>
-                                    <th>Service</th>
+                                    <th>Category</th>
                                     <th>What It Does</th>
                                     <th>Cost</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>Vercel</strong></td>
-                                    <td>Hosts the Next.js web application</td>
-                                    <td>
-                                        Free (Hobby plan covers MVP traffic)
-                                    </td>
+                                    <td><strong>Web hosting</strong></td>
+                                    <td>Hosts the web application</td>
+                                    <td>Free at launch</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Supabase</strong></td>
-                                    <td>
-                                        Database, authentication, and real-time
-                                        updates
-                                    </td>
-                                    <td>
-                                        Free → $25/month when approaching 500 MB
-                                        storage (typically ~200–400 users
-                                        depending on account sizes)
-                                    </td>
+                                    <td><strong>Database &amp; auth</strong></td>
+                                    <td>Stores all application data and manages user sessions</td>
+                                    <td>Free → ~$25/month as your user base grows</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Inngest</strong></td>
-                                    <td>
-                                        Background job queue for sync engine and
-                                        email scheduling
-                                    </td>
-                                    <td>
-                                        Free (covers up to 1,000 users on manual
-                                        sync)
-                                    </td>
+                                    <td><strong>Background job system</strong></td>
+                                    <td>Runs sync jobs and email scheduling</td>
+                                    <td>Free (covers up to 1,000 users on manual sync)</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Resend</strong></td>
-                                    <td>
-                                        Weekly summary emails to subscribers
-                                    </td>
-                                    <td>
-                                        Free (3,000 emails/month) → $20/month
-                                        above that
-                                    </td>
+                                    <td><strong>Email delivery</strong></td>
+                                    <td>Weekly summary emails to subscribers</td>
+                                    <td>Free → ~$20/month above ~3,000 emails</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Stripe</strong></td>
-                                    <td>
-                                        Subscription billing for your
-                                        end-customers
-                                    </td>
-                                    <td>
-                                        2.9% + $0.30 per transaction (no monthly
-                                        fee)
-                                    </td>
+                                    <td>Subscription billing for your end-customers</td>
+                                    <td>2.9% + $0.30 per transaction (no monthly fee)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1249,23 +1224,16 @@
                         <table class="cost-table">
                             <thead>
                                 <tr>
-                                    <th>Service</th>
+                                    <th>Category</th>
                                     <th>What It Does</th>
                                     <th>Cost</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>HikerAPI</strong></td>
-                                    <td>
-                                        Fetches Instagram followers, following
-                                        lists, profiles, and stories
-                                    </td>
-                                    <td>
-                                        Per request unit — charged per sync.
-                                        Build this cost into your subscription
-                                        pricing.
-                                    </td>
+                                    <td><strong>Instagram data</strong></td>
+                                    <td>Fetches follower lists, profiles, and stories per sync</td>
+                                    <td>Per sync — build into your subscription pricing</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1274,12 +1242,13 @@
                     <div class="callout" style="margin-top: 16px">
                         <strong>At launch (0–200 users):</strong> Fixed monthly
                         infrastructure cost is <strong>$0</strong> — all
-                        services are within free tiers. You only pay HikerAPI
-                        per sync and Stripe per transaction.<br /><br />
+                        services are within free tiers. You only pay for
+                        Instagram data per sync and Stripe per
+                        transaction.<br /><br />
                         <strong>At 1,000 users (manual sync):</strong> Fixed
                         monthly cost is approximately
-                        <strong>$45/month</strong> (Supabase Pro $25 + Resend
-                        $20). All other services remain on free tiers.
+                        <strong>~$45/month</strong>. All other services
+                        remain on free tiers.
                     </div>
                 </div>
             </div>
@@ -1291,98 +1260,18 @@
                     <h2>What You Need to Set Up Before We Start</h2>
                 </div>
                 <div class="card-body">
-                    <p class="section-intro">
-                        Please create the following accounts before or during
-                        the first two weeks. We will guide you through each one
-                        and handle all the technical configuration.
-                    </p>
-                    <div class="tbl-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Account</th>
-                                    <th>Needed For</th>
-                                    <th>When</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <strong>HikerAPI</strong> — hikerapi.com
-                                    </td>
-                                    <td>
-                                        Instagram data — follower lists,
-                                        profiles, stories
-                                    </td>
-                                    <td>
-                                        <span class="when-badge">Week 1</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Supabase</strong> — supabase.com
-                                    </td>
-                                    <td>Database and authentication</td>
-                                    <td>
-                                        <span class="when-badge">Week 1</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Vercel</strong> — vercel.com
-                                    </td>
-                                    <td>Web app hosting and subdomain setup</td>
-                                    <td>
-                                        <span class="when-badge">Week 1</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Inngest</strong> — inngest.com
-                                    </td>
-                                    <td>
-                                        Background job queue for sync and email
-                                        scheduling
-                                    </td>
-                                    <td>
-                                        <span class="when-badge">Week 1</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Stripe</strong> — stripe.com
-                                    </td>
-                                    <td>
-                                        Subscription billing. Create plan
-                                        products and prices in the dashboard.
-                                    </td>
-                                    <td>
-                                        <span class="when-badge">Week 2</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Resend</strong> — resend.com
-                                    </td>
-                                    <td>
-                                        Weekly email summaries. Requires domain
-                                        verification (DNS record).
-                                    </td>
-                                    <td>
-                                        <span class="when-badge later"
-                                            >Before Week 6</span
-                                        >
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="callout green">
+                        Once the Upwork contract is accepted, we will send
+                        you a complete onboarding checklist — the specific accounts
+                        to create, step-by-step setup instructions, and
+                        exactly when each is needed. We handle all technical
+                        configuration on our end.
                     </div>
-                    <div class="callout green" style="margin-top: 16px">
-                        <strong>From your landing page:</strong> Once the app is
-                        live at app.domain.com, you need to update the "Get
-                        Started" and "Login" buttons on domain.com to link to
-                        our routes. This is the only change needed on your
-                        existing website.
+                    <div class="callout" style="margin-top: 12px">
+                        <strong>What you already need:</strong> An active
+                        Stripe account with your subscription plan products
+                        and prices configured. Everything else will be in the
+                        onboarding checklist.
                     </div>
                 </div>
             </div>
@@ -1394,48 +1283,25 @@
                     <h2>What Is Out of Scope for This Engagement</h2>
                 </div>
                 <div class="card-body">
-                    <div class="gap-ok">
-                        ✓
-                        <strong
-                            >Plan selection page + Stripe payment flow</strong
-                        >
+                    <div class="callout green">
+                        <strong>✓ Plan selection page + Stripe payment flow</strong>
                         — prerequisite, client provides. Must include:
-                        <ul style="margin: 8px 0 0 16px">
-                            <li>
-                                Stripe account with subscription products and
-                                prices configured
-                            </li>
-                            <li>
-                                Plan selection / pricing page with Stripe
-                                Checkout
-                            </li>
-                            <li>
-                                Post-payment registration flow — collects email,
-                                creates account
-                            </li>
-                            <li>
-                                On successful payment: Stripe webhook pointed at
-                                our <code>/api/webhook</code> endpoint
-                            </li>
+                        <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                            <li>Stripe account with subscription products and prices configured</li>
+                            <li>Plan selection / pricing page with Stripe Checkout</li>
+                            <li>Post-payment registration flow — collects email, creates account</li>
+                            <li>On successful payment: Stripe webhook pointed at our <code>/api/webhook</code> endpoint</li>
                         </ul>
                     </div>
-                    <div class="gap-ok">
-                        ✓ <strong>Login + registration pages</strong>
+                    <div class="callout green">
+                        <strong>✓ Login + registration pages</strong>
                         — prerequisite, client provides. Must include:
-                        <ul style="margin: 8px 0 0 16px">
+                        <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
                             <li>Email/password authentication</li>
-                            <li>
-                                Registration page that creates the user account
-                            </li>
-                            <li>
-                                Login page with session management and redirect
-                                to the dashboard
-                            </li>
+                            <li>Registration page that creates the user account</li>
+                            <li>Login page with session management and redirect to the dashboard</li>
                             <li>Forgot password / reset password flow</li>
-                            <li>
-                                Transactional email sending for registration
-                                confirmation and password reset
-                            </li>
+                            <li>Transactional email sending for registration confirmation and password reset</li>
                         </ul>
                     </div>
                     <div class="gap-box">
@@ -1461,10 +1327,10 @@
                         worker) — a post-MVP upgrade.
                     </div>
                     <div class="gap-ok">
-                        ✓ Everything else — plan selection, payment, auth,
-                        target management, sync engine, activity feed, story
-                        viewer, and weekly email — is fully delivered in this
-                        engagement.
+                        ✓ Everything else — target management, sync engine,
+                        activity feed, story viewer, weekly email, and
+                        subscription enforcement — is fully delivered in
+                        this engagement.
                     </div>
                 </div>
             </div>
@@ -1755,17 +1621,17 @@
                                 <tr>
                                     <td>Third-party costs</td>
                                     <td>
-                                        Client pays HikerAPI, Stripe, and
-                                        hosting accounts directly — not included
-                                        in development fee
+                                        Client pays all third-party service
+                                        accounts directly — not included in
+                                        the development fee
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>First step for you</td>
                                     <td>
-                                        Create accounts listed in Section 4,
-                                        starting with HikerAPI and Supabase in
-                                        Week 1
+                                        Onboarding checklist sent after contract
+                                        signing — includes all accounts to
+                                        create and when
                                     </td>
                                 </tr>
                             </tbody>
