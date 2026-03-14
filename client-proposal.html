@@ -739,7 +739,7 @@
                 <div class="hero-meta">
                     <div class="hero-meta-item">
                         <span class="label">Prepared for</span>
-                        <span class="value">[Client Name]</span>
+                        <span class="value">Jane Alan</span>
                     </div>
                     <div class="hero-meta-item">
                         <span class="label">Date</span>
@@ -747,7 +747,7 @@
                     </div>
                     <div class="hero-meta-item">
                         <span class="label">Contract</span>
-                        <span class="value">Fixed Price — $2,500</span>
+                        <span class="value">Fixed Price — $1,600</span>
                     </div>
                     <div class="hero-meta-item">
                         <span class="label">Delivery</span>
@@ -770,8 +770,8 @@
                     </li>
                     <li>
                         Designed the complete system — pages, data model, API
-                        layer, background job pipeline, and caching — so
-                        nothing is figured out mid-build
+                        layer, background job pipeline, and caching — so nothing
+                        is figured out mid-build
                     </li>
                     <li>
                         Verified the architecture performs correctly under
@@ -785,8 +785,8 @@
                     </li>
                     <li>
                         Resolved all key engineering decisions upfront — sync
-                        accuracy, concurrency, cost controls, and data
-                        retention — before development starts
+                        accuracy, concurrency, cost controls, and data retention
+                        — before development starts
                     </li>
                 </ul>
                 <p class="closing">
@@ -805,40 +805,12 @@
                         A subscription-based web application at
                         <strong>app.domain.com</strong> that lets your customers
                         monitor public Instagram accounts — tracking followers
-                        and unfollowers after each sync. Six modules working
-                        together:
+                        and unfollowers after each sync. Four modules we build,
+                        plugging into your existing payment and auth setup:
                     </p>
                     <div class="module-grid">
                         <div class="module-card">
-                            <div class="module-num m1">1</div>
-                            <div>
-                                <div class="module-card-name">
-                                    Plan Selection + Payment
-                                </div>
-                                <div class="module-card-desc">
-                                    Pricing page with plan tiers → Stripe
-                                    Checkout → payment confirmation. Client
-                                    completes payment before creating an
-                                    account.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="module-card">
-                            <div class="module-num m2">2</div>
-                            <div>
-                                <div class="module-card-name">
-                                    Auth: Login + Registration
-                                </div>
-                                <div class="module-card-desc">
-                                    Post-payment registration gate (24-hour
-                                    expiry link), email/password login,
-                                    protected dashboard routes, and session
-                                    management.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="module-card">
-                            <div class="module-num m3">3</div>
+                            <div class="module-num m3">1</div>
                             <div>
                                 <div class="module-card-name">
                                     Target Management
@@ -852,7 +824,7 @@
                             </div>
                         </div>
                         <div class="module-card">
-                            <div class="module-num m4">4</div>
+                            <div class="module-num m4">2</div>
                             <div>
                                 <div class="module-card-name">Sync Engine</div>
                                 <div class="module-card-desc">
@@ -865,7 +837,7 @@
                             </div>
                         </div>
                         <div class="module-card">
-                            <div class="module-num m5">5</div>
+                            <div class="module-num m5">3</div>
                             <div>
                                 <div class="module-card-name">
                                     Dashboard + Activity Feed
@@ -879,7 +851,7 @@
                             </div>
                         </div>
                         <div class="module-card">
-                            <div class="module-num m6">6</div>
+                            <div class="module-num m6">4</div>
                             <div>
                                 <div class="module-card-name">
                                     Story Viewer + Weekly Email
@@ -899,9 +871,10 @@
                         <strong>Domain setup:</strong> Your existing landing
                         page at <strong>domain.com</strong> stays completely
                         untouched. We build the app at
-                        <strong>app.domain.com</strong>. The only change needed
-                        on your side is updating the "Get Started" and "Login"
-                        button links on your landing page to point to our app.
+                        <strong>app.domain.com</strong>. The only handoff
+                        required: after a user logs in, they are redirected
+                        to <strong>app.domain.com/dashboard</strong> — our
+                        app takes it from there.
                     </div>
                 </div>
             </div>
@@ -970,11 +943,10 @@
                                             >
                                         </td>
                                         <td>
-                                            Set-subtraction diff algorithm:
-                                            (current set) − (previous set) = new
-                                            followers; (previous set) − (current
-                                            set) = unfollowers. Accurate,
-                                            computed per sync.
+                                            Exactly who followed and who
+                                            unfollowed is computed on every sync
+                                            — accurate down to the individual
+                                            account.
                                         </td>
                                     </tr>
                                     <tr>
@@ -988,10 +960,8 @@
                                         </td>
                                         <td>
                                             90-day rolling feed per target
-                                            showing each event with username,
-                                            Instagram ID, and timestamp.
-                                            Automatic daily cleanup via
-                                            scheduled job.
+                                            showing each follow and unfollow
+                                            with username and timestamp.
                                         </td>
                                     </tr>
                                     <tr>
@@ -1015,11 +985,11 @@
                                             >
                                         </td>
                                         <td>
-                                            Plan-gated story viewer. Stories
-                                            proxied via our API with dynamic TTL
-                                            caching — a story uploaded 2 hours
-                                            ago is cached for 22 more hours,
-                                            saving repeated API calls.
+                                            Plan-gated story viewer. Stories are
+                                            cached intelligently — each story is
+                                            served from cache for exactly its
+                                            remaining lifetime, minimising your
+                                            API costs.
                                         </td>
                                     </tr>
                                     <tr>
@@ -1033,10 +1003,9 @@
                                             >
                                         </td>
                                         <td>
-                                            Per-target cooldown and per-user
-                                            daily sync limit — both configurable
-                                            per plan tier. Enforced before any
-                                            sync job starts.
+                                            Per-target cooldown and daily sync
+                                            cap, both set by plan tier. Prevents
+                                            overuse and controls API costs.
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1078,11 +1047,10 @@
                                             >
                                         </td>
                                         <td>
-                                            Plan tiers stored in database with
-                                            configurable limits: max targets,
-                                            max follower count, cooldown, daily
-                                            sync limit, page cap, story viewer
-                                            access.
+                                            Each plan tier controls the number
+                                            of targets, follower count limits,
+                                            sync frequency, and feature access.
+                                            All configurable.
                                         </td>
                                     </tr>
                                     <tr>
@@ -1110,11 +1078,9 @@
                                             >
                                         </td>
                                         <td>
-                                            Stripe subscription lifecycle
-                                            handled: upgrades, downgrades,
-                                            cancellations, and failed payment
-                                            recovery all trigger automatic
-                                            platform updates.
+                                            Upgrades, downgrades, cancellations,
+                                            and failed payment recovery all
+                                            handled automatically via Stripe.
                                         </td>
                                     </tr>
                                     <tr>
@@ -1125,11 +1091,10 @@
                                             >
                                         </td>
                                         <td>
-                                            Target count, follower count, story
-                                            viewer, sync limits — all enforced
-                                            at the API layer. Downgrade
-                                            auto-pauses targets that exceed the
-                                            new plan's limits.
+                                            All plan limits enforced
+                                            server-side. Downgrading auto-pauses
+                                            any targets that exceed the new
+                                            plan's limits.
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1186,11 +1151,8 @@
                                             >
                                         </td>
                                         <td>
-                                            Real-time push update to the browser
-                                            the moment a sync completes — no
-                                            page refresh, no polling.
-                                            Implemented via Supabase Realtime
-                                            WebSocket.
+                                            Browser updates the moment a sync
+                                            completes — no page refresh needed.
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1251,8 +1213,8 @@
                                         email scheduling
                                     </td>
                                     <td>
-                                        Free (50,000 runs/month — covers 1,000
-                                        users on manual sync)
+                                        Free (covers up to 1,000 users on manual
+                                        sync)
                                     </td>
                                 </tr>
                                 <tr>
@@ -1432,6 +1394,50 @@
                     <h2>What Is Out of Scope for This Engagement</h2>
                 </div>
                 <div class="card-body">
+                    <div class="gap-ok">
+                        ✓
+                        <strong
+                            >Plan selection page + Stripe payment flow</strong
+                        >
+                        — prerequisite, client provides. Must include:
+                        <ul style="margin: 8px 0 0 16px">
+                            <li>
+                                Stripe account with subscription products and
+                                prices configured
+                            </li>
+                            <li>
+                                Plan selection / pricing page with Stripe
+                                Checkout
+                            </li>
+                            <li>
+                                Post-payment registration flow — collects email,
+                                creates account
+                            </li>
+                            <li>
+                                On successful payment: Stripe webhook pointed at
+                                our <code>/api/webhook</code> endpoint
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="gap-ok">
+                        ✓ <strong>Login + registration pages</strong>
+                        — prerequisite, client provides. Must include:
+                        <ul style="margin: 8px 0 0 16px">
+                            <li>Email/password authentication</li>
+                            <li>
+                                Registration page that creates the user account
+                            </li>
+                            <li>
+                                Login page with session management and redirect
+                                to the dashboard
+                            </li>
+                            <li>Forgot password / reset password flow</li>
+                            <li>
+                                Transactional email sending for registration
+                                confirmation and password reset
+                            </li>
+                        </ul>
+                    </div>
                     <div class="gap-box">
                         <strong>Auto sync (5–15 min intervals).</strong>
                         Not included in this engagement. Auto sync can be added
@@ -1470,30 +1476,19 @@
                     <h2>Risks & Mitigations</h2>
                 </div>
                 <div class="card-body">
-                    <p class="section-intro">
-                        We stress-tested the architecture against 1,000
-                        concurrent users on the highest plan. Here are the main
-                        risks and how they are handled.
-                    </p>
                     <div class="risk-list">
                         <div class="risk-item">
                             <div class="risk-icon">⚡</div>
                             <div>
                                 <div class="risk-title">
-                                    HikerAPI rate limits under concurrent load
+                                    API rate limits under concurrent load
                                 </div>
                                 <div class="risk-body">
-                                    At 50 concurrent sync jobs, all hitting
-                                    HikerAPI through one API key, the combined
-                                    request rate can exceed the per-key limit.
-                                    <strong>Mitigation:</strong> Inngest
-                                    built-in rate limiting (20 req/s globally
-                                    across all concurrent jobs) declared in
-                                    function config — no application code
-                                    needed. Plus per-fetch random jitter
-                                    (100–300ms) to smooth burst collisions.
-                                    Automatic retry with exponential backoff on
-                                    429 responses.
+                                    Many users syncing simultaneously share one
+                                    API key. <strong>Handled:</strong> Rate
+                                    limiting is enforced automatically across
+                                    all concurrent jobs, with automatic retry on
+                                    failure. No user-facing errors.
                                 </div>
                             </div>
                         </div>
@@ -1501,79 +1496,47 @@
                             <div class="risk-icon">🔒</div>
                             <div>
                                 <div class="risk-title">
-                                    Race condition on concurrent sync requests
+                                    Duplicate sync on the same account
                                 </div>
                                 <div class="risk-body">
-                                    Two sync requests for the same target could
-                                    both read "status = active" before either
-                                    writes "status = syncing" — causing
-                                    duplicate events.
-                                    <strong>Mitigation:</strong> PostgreSQL
-                                    <code>FOR UPDATE SKIP LOCKED</code> — an
-                                    atomic database-level row lock. If the row
-                                    is already locked by another sync, the
-                                    second request receives a clean 409 Conflict
-                                    without touching the sync logic. No
-                                    application-level mutex needed.
+                                    Two simultaneous sync requests for the same
+                                    target could produce duplicate events.
+                                    <strong>Handled:</strong> Database-level
+                                    locking ensures only one sync runs per
+                                    target at a time. The second request is
+                                    cleanly rejected.
                                 </div>
                             </div>
                         </div>
                         <div class="risk-item">
-                            <div class="risk-icon">💾</div>
-                            <div>
-                                <div class="risk-title">
-                                    Database write volume at scale
-                                </div>
-                                <div class="risk-body">
-                                    A naive implementation deletes all follower
-                                    state and re-inserts it on every sync —
-                                    40,000 row operations per sync for a
-                                    20k-follower account. At 1,000 users this is
-                                    24 million row ops/day.
-                                    <strong>Mitigation:</strong> Diff-only
-                                    writes — only INSERT newly followed accounts
-                                    and DELETE unfollowed ones. Typical sync:
-                                    ~200 row ops. 120× reduction in database
-                                    load.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="risk-item">
-                            <div class="risk-icon risk-icon green">⏱</div>
+                            <div class="risk-icon">⏱</div>
                             <div>
                                 <div class="risk-title">
                                     Sync timeout on large accounts
                                 </div>
                                 <div class="risk-body">
-                                    Syncing a 500k-follower account takes 60–90
-                                    seconds — too long for a standard HTTP
-                                    request.
-                                    <strong>Mitigation:</strong> Inngest
-                                    background job execution with no timeout
-                                    limit. The API route returns 202 in under
-                                    500ms; Inngest runs the sync job to
-                                    completion in the background; Supabase
-                                    Realtime pushes the result to the browser
-                                    the moment it finishes.
+                                    Syncing a large account can take 60–90
+                                    seconds — too long for a standard web
+                                    request. <strong>Handled:</strong> Syncs run
+                                    as background jobs with no timeout. The
+                                    browser updates automatically the moment the
+                                    job completes.
                                 </div>
                             </div>
                         </div>
                         <div class="risk-item">
-                            <div class="risk-icon risk-icon green">📊</div>
+                            <div class="risk-icon">📊</div>
                             <div>
                                 <div class="risk-title">
                                     Account goes private after being added
                                 </div>
                                 <div class="risk-body">
-                                    An account the user is monitoring could be
-                                    set to private after it was added.
-                                    <strong>Mitigation:</strong> Private
-                                    accounts are detected automatically on the
-                                    next sync. The target is paused with status
-                                    <em>paused-private</em> and a clear message
-                                    shown in the dashboard. The user can
-                                    re-activate it if the account goes public
-                                    again.
+                                    A monitored account could switch to private
+                                    after being added. <strong>Handled:</strong>
+                                    Detected automatically on the next sync. The
+                                    target is paused with a clear status
+                                    message. Reactivated automatically if the
+                                    account goes public again.
                                 </div>
                             </div>
                         </div>
@@ -1581,18 +1544,14 @@
                             <div class="risk-icon">💳</div>
                             <div>
                                 <div class="risk-title">
-                                    Stripe webhook missed or delivered twice
+                                    Payment webhook missed or delivered twice
                                 </div>
                                 <div class="risk-body">
-                                    Stripe retries webhooks on failure. A
-                                    payment confirmation webhook could arrive
-                                    multiple times.
-                                    <strong>Mitigation:</strong> Idempotent
-                                    webhook handler — each Stripe event ID is
-                                    checked before processing. Duplicate events
-                                    are silently discarded. The
-                                    pending_registration record has a 24-hour
-                                    expiry as an additional safety net.
+                                    Stripe retries failed webhooks, which can
+                                    result in duplicate delivery.
+                                    <strong>Handled:</strong> Duplicate events
+                                    are detected and discarded automatically —
+                                    no double-charges or double-registrations.
                                 </div>
                             </div>
                         </div>
@@ -1607,107 +1566,125 @@
                     <h2>Quote</h2>
                 </div>
                 <div class="card-body">
-                    <p class="section-intro">
-                        Two options depending on your budget and timeline preference.
-                    </p>
-
-                    <div class="budget-row" style="margin-top: 4px;">
+                    <div class="budget-row" style="margin-top: 4px">
                         <div class="budget-highlight">
-                            <div class="bh-label">Option A — Full Delivery</div>
-                            <div class="bh-amount">$2,500</div>
-                            <div class="bh-sub">Fixed price · complete MVP in one contract · 8–10 weeks</div>
-                        </div>
-                        <div class="budget-highlight" style="background: var(--navy-light)">
-                            <div class="bh-label">Option B — Phased</div>
-                            <div class="bh-amount">$1,600 + $600</div>
-                            <div class="bh-sub">Phase 1 core now · Phase 2 polish after launch</div>
+                            <div class="bh-label">Fixed Price</div>
+                            <div class="bh-amount">$1,600</div>
+                            <div class="bh-sub">
+                                Complete delivery · one contract · 8–10 weeks
+                            </div>
                         </div>
                     </div>
 
-                    <h3 class="sub" style="margin-top: 20px">What each option includes</h3>
+                    <h3 class="sub" style="margin-top: 20px">
+                        What is included
+                    </h3>
                     <div class="tbl-wrap">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Deliverable</th>
-                                    <th>Option A ($2,500)</th>
-                                    <th>Option B Phase 1 ($1,600)</th>
-                                    <th>Option B Phase 2 ($600)</th>
+                                    <th>Included</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Plan selection + Stripe payment</td>
+                                    <td>Stripe webhook handling — plan upgrades, downgrades, cancellations</td>
                                     <td><span class="badge-full">✓ Included</span></td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
                                 </tr>
                                 <tr>
-                                    <td>Auth: login + registration</td>
+                                    <td>Plan limits enforcement — target count, sync frequency, feature access, auto-pause on downgrade</td>
                                     <td><span class="badge-full">✓ Included</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Subscription management UI — upgrade, downgrade, cancel via Stripe Customer Portal</td>
                                     <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
                                 </tr>
                                 <tr>
                                     <td>Target management</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Sync engine + activity feed</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>Dashboard (core)</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
-                                </tr>
-                                <tr>
-                                    <td>Deployment + go-live</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
+                                    <td>Dashboard</td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Story viewer</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Weekly email summary</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Client branding integration</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>Dashboard enhancements (stats, usage)</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>—</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>Deployment + go-live</td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Full QA pass</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
-                                    <td>Core flows only</td>
-                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Included</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Plan selection page + Stripe payment
+                                        flow
+                                    </td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Client prerequisite</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Login + registration pages</td>
+                                    <td>
+                                        <span class="badge-full"
+                                            >✓ Client prerequisite</span
+                                        >
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-
-                    <div class="callout green" style="margin-top: 16px">
-                        <strong>Option B — how it works:</strong> Phase 1 ($1,600) delivers a fully working product — your subscribers can pay, register, add targets, sync, and view the activity feed. You can launch and validate with early users. Phase 2 ($600) adds the story viewer, weekly email, branding, and a full QA pass. Both phases total $2,200 — slightly less than Option A.
                     </div>
                 </div>
             </div>
@@ -1728,36 +1705,23 @@
                                 </tr>
                                 <tr>
                                     <td>Quote</td>
-                                    <td>
-                                        $2,500 (or $1,600 Phase 1 + $600 Phase
-                                        2)
-                                    </td>
+                                    <td>$1,600 fixed price</td>
                                 </tr>
                                 <tr>
                                     <td>Delivery timeline</td>
                                     <td>8–10 weeks</td>
                                 </tr>
                                 <tr>
-                                    <td>Developer rate</td>
-                                    <td>
-                                        $25/hour (72h with BMAD v6 AI tooling)
-                                    </td>
-                                </tr>
-                                <tr>
                                     <td>Modules delivered</td>
                                     <td>
-                                        All 6 — plan+payment, auth, targets,
-                                        sync engine, dashboard, story viewer +
-                                        email
+                                        Plan enforcement, target management,
+                                        sync engine, dashboard, story viewer,
+                                        weekly email
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Requirements coverage</td>
-                                    <td>
-                                        100% of core requirements met. 3 items
-                                        changed with explanation (see Section
-                                        3).
-                                    </td>
+                                    <td>100% of core requirements met</td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -1784,10 +1748,8 @@
                                 <tr>
                                     <td>Key technical decisions</td>
                                     <td>
-                                        HikerAPI (no custom scraper), Inngest
-                                        (no timeout, built-in rate limiting),
-                                        diff-only writes (120× fewer DB ops),
-                                        Vercel edge cache for stories
+                                        Managed Instagram data API, background
+                                        job queue, edge-cached story delivery
                                     </td>
                                 </tr>
                                 <tr>
