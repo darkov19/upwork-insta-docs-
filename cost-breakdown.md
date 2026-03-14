@@ -249,17 +249,17 @@ Features to defer post-MVP:
 
 ### The Math
 
-| | $1,500 quote | $1,600 quote |
-|---|---|---|
-| Upwork fee (first $500 @ 20%) | -$100 | -$100 |
-| Upwork fee (remainder @ 10%) | -$100 | -$110 |
-| You receive | $1,300 | $1,390 |
-| Claude API | -$100 | -$100 |
-| **Net in your pocket** | **$1,200** | **$1,290** |
-| At $25/hr: hours covered | **48h** | **51.6h** |
-| Revised scope needs | 72h | 72h |
-| **Hours you fund yourself** | **24h ($600)** | **20.4h ($510)** |
-| Effective hourly rate | **$16.67/hr** | **$17.92/hr** |
+|                               | $1,500 quote   | $1,600 quote     |
+| ----------------------------- | -------------- | ---------------- |
+| Upwork fee (first $500 @ 20%) | -$100          | -$100            |
+| Upwork fee (remainder @ 10%)  | -$100          | -$110            |
+| You receive                   | $1,300         | $1,390           |
+| Claude API                    | -$100          | -$100            |
+| **Net in your pocket**        | **$1,200**     | **$1,290**       |
+| At $25/hr: hours covered      | **48h**        | **51.6h**        |
+| Revised scope needs           | 72h            | 72h              |
+| **Hours you fund yourself**   | **24h ($600)** | **20.4h ($510)** |
+| Effective hourly rate         | **$16.67/hr**  | **$17.92/hr**    |
 
 You would be working roughly one-third of the project for free.
 
@@ -269,16 +269,16 @@ You would be working roughly one-third of the project for free.
 
 To fit within the hours the budget covers, these features must be cut from the contract:
 
-| Cut | Hours saved | Impact |
-|---|---|---|
-| Story viewer | -4h | Delivered in Phase 2 |
-| Weekly email | -3h | Delivered in Phase 2 |
-| Client branding | -3h | Basic functional styling only |
-| Activity feed pagination | -1.5h | Show last 50 events, no load more |
-| Stats display | -1h | Remove from dashboard |
-| Plan usage display | -1h | Remove from dashboard |
-| QA: 8h → 4h | -4h | Smoke test only, no edge case scenarios |
-| **Total saved** | **-17.5h → 54.5h** | |
+| Cut                      | Hours saved        | Impact                                  |
+| ------------------------ | ------------------ | --------------------------------------- |
+| Story viewer             | -4h                | Delivered in Phase 2                    |
+| Weekly email             | -3h                | Delivered in Phase 2                    |
+| Client branding          | -3h                | Basic functional styling only           |
+| Activity feed pagination | -1.5h              | Show last 50 events, no load more       |
+| Stats display            | -1h                | Remove from dashboard                   |
+| Plan usage display       | -1h                | Remove from dashboard                   |
+| QA: 8h → 4h              | -4h                | Smoke test only, no edge case scenarios |
+| **Total saved**          | **-17.5h → 54.5h** |                                         |
 
 Even after all these cuts you're at **54.5h** — still 3–6 hours over a $1,500–1,600 budget. The client gets a working product but not the full MVP they expect: no story viewer, no weekly email, no branding, minimal dashboard, light QA.
 
@@ -289,11 +289,13 @@ Even after all these cuts you're at **54.5h** — still 3–6 hours over a $1,50
 Take the project at $1,500–$1,600, deliver the full 72h scope, accept the lower effective rate.
 
 **When this makes sense:**
+
 - This is your first Upwork client — a 5-star review is worth real money in future contracts
 - You're learning the stack (Inngest, Supabase Realtime, HikerAPI) — effectively paid training
 - You want the portfolio piece
 
 **When it doesn't:**
+
 - You have other paid work at $25/hr — the 20–24 unpaid hours have an opportunity cost
 - The client has revision expectations — any revision round pushes you further negative
 
@@ -305,48 +307,48 @@ Accept $1,500–$1,600 but split delivery into two contracts.
 
 **Phase 1 — $1,600 (this contract):**
 
-| Item | Hours |
-|---|---|
-| Project setup + DB schema | 6h |
-| Auth flow: login + registration | 7h |
-| Plan selection + Stripe Checkout | 4h |
-| Plan management + Stripe webhooks | 5h |
-| Target management | 6h |
-| Sync engine + Inngest + Realtime | 12h |
-| Dashboard UI (core only — targets, activity feed, sync button) | 6h |
-| Deployment + go-live | 3h |
-| QA (core flows only) | 4h |
-| **Phase 1 total** | **53h** |
+| Item                                                           | Hours   |
+| -------------------------------------------------------------- | ------- |
+| Project setup + DB schema                                      | 6h      |
+| Auth flow: login + registration                                | 7h      |
+| Plan selection + Stripe Checkout                               | 4h      |
+| Plan management + Stripe webhooks                              | 5h      |
+| Target management                                              | 6h      |
+| Sync engine + Inngest + Realtime                               | 12h     |
+| Dashboard UI (core only — targets, activity feed, sync button) | 6h      |
+| Deployment + go-live                                           | 3h      |
+| QA (core flows only)                                           | 4h      |
+| **Phase 1 total**                                              | **53h** |
 
 Tight at $1,600 (51.6h covered) — you absorb ~1.5h. Acceptable.
 
 **Phase 2 — Separate quote ~$550–$600 (after launch):**
 
-| Item | Hours |
-|---|---|
-| Story viewer (proxy + TTL cache + UI) | 4h |
-| Weekly email (Inngest cron + Resend template) | 3h |
-| Client branding integration | 3h |
-| Dashboard enhancements (stats, plan usage, pagination) | 3h |
-| Full QA pass | 4h |
-| **Phase 2 total** | **17h** |
+| Item                                                   | Hours   |
+| ------------------------------------------------------ | ------- |
+| Story viewer (proxy + TTL cache + UI)                  | 4h      |
+| Weekly email (Inngest cron + Resend template)          | 3h      |
+| Client branding integration                            | 3h      |
+| Dashboard enhancements (stats, plan usage, pagination) | 3h      |
+| Full QA pass                                           | 4h      |
+| **Phase 2 total**                                      | **17h** |
 
 **Total client pays: $2,150–$2,200** — same destination as the recommended quote, split into two contracts. Easier for a client with a tight initial budget to say yes to Phase 1 now and Phase 2 after they see it working.
 
 **What to say to the client:**
 
-> *"We can start with the core MVP at $1,600 — this covers the sync engine, Stripe payment flow, auth, target management, and dashboard. Story viewer, weekly email, and branding polish would be a Phase 2 at around $600 once the core is live and you've validated it with early users. Total comes to $2,200, same as the full quote, but split so you can see working software before committing the remainder."*
+> _"We can start with the core MVP at $1,600 — this covers the sync engine, Stripe payment flow, auth, target management, and dashboard. Story viewer, weekly email, and branding polish would be a Phase 2 at around $600 once the core is live and you've validated it with early users. Total comes to $2,200, same as the full quote, but split so you can see working software before committing the remainder."_
 
 ---
 
 ### Comparison
 
-| Approach | Quote | You work | Effective rate | Delivers |
-|---|---|---|---|---|
-| Cut scope | $1,500 | 48h | $25/hr | Stripped MVP — no story viewer, email, branding |
-| Accept loss | $1,500 | 72h | $16.67/hr | Full MVP — 24h unpaid |
-| Accept loss | $1,600 | 72h | $17.92/hr | Full MVP — 20h unpaid |
-| **Phase it** | **$1,600 now + $600 later** | **72h total** | **~$25/hr** | **Full MVP — split across 2 contracts** |
+| Approach     | Quote                       | You work      | Effective rate | Delivers                                        |
+| ------------ | --------------------------- | ------------- | -------------- | ----------------------------------------------- |
+| Cut scope    | $1,500                      | 48h           | $25/hr         | Stripped MVP — no story viewer, email, branding |
+| Accept loss  | $1,500                      | 72h           | $16.67/hr      | Full MVP — 24h unpaid                           |
+| Accept loss  | $1,600                      | 72h           | $17.92/hr      | Full MVP — 20h unpaid                           |
+| **Phase it** | **$1,600 now + $600 later** | **72h total** | **~$25/hr**    | **Full MVP — split across 2 contracts**         |
 
 The phased approach is the only path that delivers the full product, protects your hourly rate, and works within the client's stated budget ceiling.
 

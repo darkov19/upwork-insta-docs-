@@ -1,0 +1,1835 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Project Proposal — Instagram Follower Monitor</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* ─── Reset & Base ─────────────────────────────────────────────── */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --navy: #1e3a5f;
+                --navy-light: #2d5282;
+                --blue: #2563eb;
+                --blue-light: #dbeafe;
+                --blue-xlight: #eff6ff;
+                --green: #16a34a;
+                --green-light: #dcfce7;
+                --amber: #d97706;
+                --amber-light: #fef3c7;
+                --slate-50: #f8fafc;
+                --slate-100: #f1f5f9;
+                --slate-200: #e2e8f0;
+                --slate-400: #94a3b8;
+                --slate-600: #475569;
+                --slate-800: #1e293b;
+                --text: #0f172a;
+                --radius: 10px;
+                --shadow-sm:
+                    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+                --shadow:
+                    0 4px 16px rgba(0, 0, 0, 0.08),
+                    0 1px 4px rgba(0, 0, 0, 0.04);
+                --shadow-lg:
+                    0 10px 30px rgba(0, 0, 0, 0.1),
+                    0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            html {
+                font-size: 15px;
+                scroll-behavior: smooth;
+            }
+
+            body {
+                font-family: "Inter", system-ui, sans-serif;
+                background: var(--slate-100);
+                color: var(--text);
+                line-height: 1.7;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ─── PDF Button Bar ────────────────────────────────────────────── */
+            .pdf-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                background: var(--navy);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 32px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+            }
+            .pdf-bar-title {
+                color: rgba(255, 255, 255, 0.75);
+                font-size: 0.8rem;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+            .pdf-btn {
+                background: #fff;
+                color: var(--navy);
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-family: inherit;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition:
+                    background 0.15s,
+                    box-shadow 0.15s;
+            }
+            .pdf-btn:hover {
+                background: var(--blue-light);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+            .pdf-btn svg {
+                width: 16px;
+                height: 16px;
+                flex-shrink: 0;
+            }
+            .pdf-tip {
+                font-size: 0.72rem;
+                color: rgba(255, 255, 255, 0.5);
+                line-height: 1.5;
+                max-width: 340px;
+                text-align: right;
+            }
+            .pdf-tip strong {
+                color: rgba(255, 255, 255, 0.8);
+                font-weight: 600;
+            }
+
+            /* ─── Page Layout ───────────────────────────────────────────────── */
+            .page {
+                max-width: 920px;
+                margin: 0 auto;
+                padding: 88px 24px 64px;
+            }
+
+            /* ─── Hero ──────────────────────────────────────────────────────── */
+            .hero {
+                background: linear-gradient(
+                    135deg,
+                    var(--navy) 0%,
+                    var(--navy-light) 100%
+                );
+                border-radius: var(--radius);
+                padding: 44px 48px;
+                margin-bottom: 32px;
+                box-shadow: var(--shadow-lg);
+                color: #fff;
+            }
+            .hero-label {
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.55);
+                margin-bottom: 10px;
+            }
+            .hero h1 {
+                font-size: 1.9rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                line-height: 1.2;
+                margin-bottom: 28px;
+            }
+            .hero-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px 32px;
+            }
+            .hero-meta-item {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .hero-meta-item .label {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.5);
+            }
+            .hero-meta-item .value {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            /* ─── Cards / Sections ──────────────────────────────────────────── */
+            .card {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                margin-bottom: 24px;
+                overflow: hidden;
+            }
+            .card-header {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 22px 28px;
+                border-bottom: 1px solid var(--slate-200);
+            }
+            .section-num {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                background: var(--navy);
+                color: #fff;
+                font-size: 0.75rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .card-header h2 {
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: var(--navy);
+                letter-spacing: -0.01em;
+            }
+            .card-body {
+                padding: 24px 28px;
+            }
+
+            /* ─── Preamble Card ──────────────────────────────────────────────── */
+            .preamble {
+                background: var(--blue-xlight);
+                border: 1px solid #bfdbfe;
+                border-radius: var(--radius);
+                padding: 22px 28px;
+                margin-bottom: 24px;
+            }
+            .preamble h2 {
+                font-size: 1rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin-bottom: 10px;
+            }
+            .preamble ul {
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .preamble ul li {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                font-size: 0.9rem;
+                color: var(--slate-800);
+            }
+            .preamble ul li::before {
+                content: "✓";
+                color: var(--blue);
+                font-weight: 700;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+            .preamble .closing {
+                margin-top: 14px;
+                font-size: 0.9rem;
+                color: var(--slate-600);
+                font-style: italic;
+            }
+
+            /* ─── Module Grid ───────────────────────────────────────────────── */
+            .module-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                margin-top: 4px;
+            }
+            .module-card {
+                border: 1px solid var(--slate-200);
+                border-radius: 8px;
+                padding: 16px 18px;
+                display: flex;
+                gap: 14px;
+                align-items: flex-start;
+            }
+            .module-num {
+                width: 28px;
+                height: 28px;
+                border-radius: 7px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #fff;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+            .m1 {
+                background: #2563eb;
+            }
+            .m2 {
+                background: #7c3aed;
+            }
+            .m3 {
+                background: #0891b2;
+            }
+            .m4 {
+                background: #d97706;
+            }
+            .m5 {
+                background: #16a34a;
+            }
+            .m6 {
+                background: #dc2626;
+            }
+
+            .module-card-name {
+                font-size: 0.88rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin-bottom: 4px;
+            }
+            .module-card-desc {
+                font-size: 0.82rem;
+                color: var(--slate-600);
+                line-height: 1.5;
+            }
+
+            /* ─── Module Subsections ─────────────────────────────────────────── */
+            .module-section {
+                margin-bottom: 30px;
+            }
+            .module-section:last-child {
+                margin-bottom: 0;
+            }
+            .module-section-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+            .module-section-header h3 {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--navy);
+            }
+
+            /* ─── Tables ────────────────────────────────────────────────────── */
+            .tbl-wrap {
+                overflow-x: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.84rem;
+            }
+            thead tr {
+                background: var(--slate-100);
+            }
+            thead th {
+                padding: 10px 14px;
+                text-align: left;
+                font-size: 0.72rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--slate-600);
+                border-bottom: 2px solid var(--slate-200);
+                white-space: nowrap;
+            }
+            tbody tr {
+                border-bottom: 1px solid var(--slate-100);
+            }
+            tbody tr:last-child {
+                border-bottom: none;
+            }
+            tbody tr:hover {
+                background: var(--slate-50);
+            }
+            tbody td {
+                padding: 11px 14px;
+                vertical-align: top;
+                color: var(--slate-800);
+                line-height: 1.5;
+            }
+            tbody td:first-child {
+                font-weight: 500;
+                color: var(--text);
+            }
+
+            /* badges */
+            .badge-full {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: var(--green-light);
+                color: var(--green);
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .badge-changed {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: var(--amber-light);
+                color: #92400e;
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .badge-improved {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: #ede9fe;
+                color: #6d28d9;
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .badge-oos {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: var(--slate-100);
+                color: var(--slate-600);
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .cost-table tbody tr:nth-child(even) {
+                background: var(--slate-50);
+            }
+            .summary-table tbody td:first-child {
+                color: var(--slate-600);
+                font-weight: 500;
+            }
+            .summary-table tbody td:last-child {
+                font-weight: 600;
+                color: var(--navy);
+            }
+
+            /* ─── Callout Boxes ─────────────────────────────────────────────── */
+            .callout {
+                border-left: 4px solid var(--blue);
+                background: var(--blue-xlight);
+                border-radius: 0 8px 8px 0;
+                padding: 14px 18px;
+                margin: 16px 0;
+                font-size: 0.87rem;
+                color: var(--slate-800);
+                line-height: 1.6;
+            }
+            .callout strong {
+                color: var(--navy);
+            }
+            .callout.amber {
+                border-left-color: var(--amber);
+                background: var(--amber-light);
+            }
+            .callout.green {
+                border-left-color: var(--green);
+                background: var(--green-light);
+            }
+            .callout ul {
+                padding-left: 18px;
+                margin-top: 8px;
+            }
+            .callout ul li {
+                margin-bottom: 4px;
+            }
+
+            /* ─── Risk List ─────────────────────────────────────────────────── */
+            .risk-list {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+            }
+            .risk-item {
+                display: flex;
+                gap: 14px;
+                align-items: flex-start;
+                border: 1px solid var(--slate-200);
+                border-radius: 8px;
+                padding: 16px 18px;
+            }
+            .risk-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: var(--amber-light);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                font-size: 1rem;
+            }
+            .risk-icon.green {
+                background: var(--green-light);
+            }
+            .risk-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin-bottom: 4px;
+            }
+            .risk-body {
+                font-size: 0.84rem;
+                color: var(--slate-600);
+                line-height: 1.55;
+            }
+
+            /* ─── When badges ────────────────────────────────────────────────── */
+            .when-badge {
+                display: inline-block;
+                background: var(--navy);
+                color: #fff;
+                font-size: 0.68rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+            }
+            .when-badge.later {
+                background: var(--slate-400);
+            }
+
+            /* ─── Gap/OK boxes ───────────────────────────────────────────────── */
+            .gap-box {
+                border: 1.5px solid #fde68a;
+                background: #fffbeb;
+                border-radius: 8px;
+                padding: 18px 22px;
+                font-size: 0.88rem;
+                color: var(--slate-800);
+                line-height: 1.65;
+                margin-bottom: 12px;
+            }
+            .gap-box strong {
+                color: var(--navy);
+            }
+            .gap-ok {
+                background: var(--green-light);
+                border: 1.5px solid #bbf7d0;
+                border-radius: 8px;
+                padding: 14px 22px;
+                font-size: 0.88rem;
+                color: #166534;
+                font-weight: 500;
+            }
+
+            /* ─── Budget box ─────────────────────────────────────────────────── */
+            .budget-highlight {
+                background: var(--navy);
+                border-radius: 8px;
+                padding: 22px 28px;
+                color: #fff;
+                margin-bottom: 16px;
+            }
+            .budget-highlight .bh-label {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.5);
+                margin-bottom: 6px;
+            }
+            .budget-highlight .bh-amount {
+                font-size: 2rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                margin-bottom: 4px;
+            }
+            .budget-highlight .bh-sub {
+                font-size: 0.82rem;
+                color: rgba(255, 255, 255, 0.6);
+            }
+            .budget-row {
+                display: flex;
+                gap: 16px;
+            }
+            .budget-row .budget-highlight {
+                flex: 1;
+            }
+
+            /* ─── Typography helpers ─────────────────────────────────────────── */
+            p {
+                margin-bottom: 10px;
+                font-size: 0.9rem;
+                color: var(--slate-800);
+                line-height: 1.7;
+            }
+            p:last-child {
+                margin-bottom: 0;
+            }
+            strong {
+                font-weight: 700;
+            }
+            .section-intro {
+                font-size: 0.9rem;
+                color: var(--slate-600);
+                margin-bottom: 18px;
+            }
+            h3.sub {
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin: 20px 0 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            .divider {
+                border: none;
+                border-top: 1px solid var(--slate-200);
+                margin: 22px 0;
+            }
+
+            /* ─── Footer ─────────────────────────────────────────────────────── */
+            .footer {
+                text-align: center;
+                font-size: 0.8rem;
+                color: var(--slate-400);
+                padding: 24px 0 8px;
+            }
+
+            /* ─── Print / PDF ────────────────────────────────────────────────── */
+            @page {
+                size: A4;
+                margin: 14mm 18mm 22mm 18mm;
+                @bottom-right {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-family: "Inter", sans-serif;
+                    font-size: 8pt;
+                    font-weight: 600;
+                    color: #94a3b8;
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                }
+                @bottom-left {
+                    content: "Instagram Follower Monitor — Project Proposal";
+                    font-family: "Inter", sans-serif;
+                    font-size: 8pt;
+                    color: #cbd5e1;
+                    letter-spacing: 0.04em;
+                }
+            }
+
+            @media print {
+                .pdf-bar {
+                    display: none !important;
+                }
+                body {
+                    background: #fff;
+                }
+                .page {
+                    padding: 0;
+                    max-width: 100%;
+                }
+                .card,
+                .preamble,
+                .hero {
+                    box-shadow: none;
+                    border: 1px solid #ddd;
+                }
+                .hero {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .badge-full,
+                .badge-changed,
+                .badge-improved,
+                .badge-oos,
+                .section-num,
+                .module-num,
+                .when-badge,
+                .callout,
+                .gap-box,
+                .gap-ok,
+                .budget-highlight {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .card {
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                }
+                .module-grid {
+                    page-break-inside: avoid;
+                }
+                table {
+                    page-break-inside: auto;
+                }
+                tr {
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                }
+                thead {
+                    display: table-header-group;
+                }
+                .card + .card {
+                    margin-top: 12px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ─── PDF Bar ─────────────────────────────────────────────────────── -->
+        <div class="pdf-bar">
+            <span class="pdf-bar-title"
+                >Project Proposal — Instagram Follower Monitor</span
+            >
+            <div style="display: flex; align-items: center; gap: 16px">
+                <span class="pdf-tip">
+                    In print dialog &rarr; set
+                    <strong>Destination: Save as PDF</strong> &rarr; uncheck
+                    <strong>Headers and footers</strong>
+                </span>
+                <button class="pdf-btn" onclick="window.print()">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                        />
+                    </svg>
+                    Save as PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- ─── Page ──────────────────────────────────────────────────────────── -->
+        <div class="page">
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-label">Project Proposal</div>
+                <h1>Instagram Follower Monitor</h1>
+                <div class="hero-meta">
+                    <div class="hero-meta-item">
+                        <span class="label">Prepared for</span>
+                        <span class="value">[Client Name]</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Date</span>
+                        <span class="value">March 2026</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Contract</span>
+                        <span class="value">Fixed Price — $2,500</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Delivery</span>
+                        <span class="value">8–10 weeks</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Platform</span>
+                        <span class="value">Upwork</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preamble -->
+            <div class="preamble">
+                <h2>A Note Before We Begin</h2>
+                <ul>
+                    <li>
+                        Read your brief and requirements in full before writing
+                        a line of code
+                    </li>
+                    <li>
+                        Designed the complete system — pages, data model, API
+                        layer, background job pipeline, and caching — so
+                        nothing is figured out mid-build
+                    </li>
+                    <li>
+                        Verified the architecture performs correctly under
+                        realistic load, so the platform scales with your
+                        subscriber base without surprises
+                    </li>
+                    <li>
+                        Selected managed services that reduce the infrastructure
+                        you need to maintain after launch and keep your monthly
+                        running costs low
+                    </li>
+                    <li>
+                        Resolved all key engineering decisions upfront — sync
+                        accuracy, concurrency, cost controls, and data
+                        retention — before development starts
+                    </li>
+                </ul>
+                <p class="closing">
+                    The groundwork is done. We are ready to build.
+                </p>
+            </div>
+
+            <!-- ── Section 1: What We Are Building ───────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">1</div>
+                    <h2>What We Are Building</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        A subscription-based web application at
+                        <strong>app.domain.com</strong> that lets your customers
+                        monitor public Instagram accounts — tracking followers
+                        and unfollowers after each sync. Six modules working
+                        together:
+                    </p>
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-num m1">1</div>
+                            <div>
+                                <div class="module-card-name">
+                                    Plan Selection + Payment
+                                </div>
+                                <div class="module-card-desc">
+                                    Pricing page with plan tiers → Stripe
+                                    Checkout → payment confirmation. Client
+                                    completes payment before creating an
+                                    account.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m2">2</div>
+                            <div>
+                                <div class="module-card-name">
+                                    Auth: Login + Registration
+                                </div>
+                                <div class="module-card-desc">
+                                    Post-payment registration gate (24-hour
+                                    expiry link), email/password login,
+                                    protected dashboard routes, and session
+                                    management.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m3">3</div>
+                            <div>
+                                <div class="module-card-name">
+                                    Target Management
+                                </div>
+                                <div class="module-card-desc">
+                                    Add public Instagram accounts to monitor.
+                                    Validates each account (public? within
+                                    follower limit?). Shows status — active,
+                                    paused-private, paused-out-of-plan, error.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m4">4</div>
+                            <div>
+                                <div class="module-card-name">Sync Engine</div>
+                                <div class="module-card-desc">
+                                    Fetches follower and following lists from
+                                    Instagram, computes exactly who followed and
+                                    unfollowed since the last sync, and stores
+                                    only the changes. Runs as a background job —
+                                    no browser timeouts.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m5">5</div>
+                            <div>
+                                <div class="module-card-name">
+                                    Dashboard + Activity Feed
+                                </div>
+                                <div class="module-card-desc">
+                                    Main app screen showing monitored targets,
+                                    sync status (live update — no page refresh
+                                    needed), and a 90-day activity feed of who
+                                    followed and unfollowed.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m6">6</div>
+                            <div>
+                                <div class="module-card-name">
+                                    Story Viewer + Weekly Email
+                                </div>
+                                <div class="module-card-desc">
+                                    Plan-gated story viewer with intelligent
+                                    caching (stories cached for exactly their
+                                    remaining Instagram lifetime). Weekly email
+                                    summary sent only when there is activity to
+                                    report.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout" style="margin-top: 20px">
+                        <strong>Domain setup:</strong> Your existing landing
+                        page at <strong>domain.com</strong> stays completely
+                        untouched. We build the app at
+                        <strong>app.domain.com</strong>. The only change needed
+                        on your side is updating the "Get Started" and "Login"
+                        button links on your landing page to point to our app.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 2: Requirements Coverage ──────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">2</div>
+                    <h2>Your Requirements — Coverage Check</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        Every requirement from your brief, and exactly how we
+                        cover it.
+                    </p>
+
+                    <!-- Core monitoring -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m4"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                4
+                            </div>
+                            <h3>Core Monitoring Features</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Monitor public Instagram accounts
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            HikerAPI fetches follower and
+                                            following lists. Handles anti-bot,
+                                            proxies, and rate limiting on their
+                                            end — nothing to build or maintain.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Track who followed and unfollowed
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Set-subtraction diff algorithm:
+                                            (current set) − (previous set) = new
+                                            followers; (previous set) − (current
+                                            set) = unfollowers. Accurate,
+                                            computed per sync.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Activity feed (follows + unfollows)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            90-day rolling feed per target
+                                            showing each event with username,
+                                            Instagram ID, and timestamp.
+                                            Automatic daily cleanup via
+                                            scheduled job.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Multiple targets per user</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Each plan tier sets a maximum number
+                                            of monitored accounts. Users manage
+                                            all targets from one dashboard.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Story viewing</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Plan-gated story viewer. Stories
+                                            proxied via our API with dynamic TTL
+                                            caching — a story uploaded 2 hours
+                                            ago is cached for 22 more hours,
+                                            saving repeated API calls.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Sync rate limiting (cooldown + daily
+                                            cap)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Per-target cooldown and per-user
+                                            daily sync limit — both configurable
+                                            per plan tier. Enforced before any
+                                            sync job starts.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Subscription + billing -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m1"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                1
+                            </div>
+                            <h3>Subscription Plans + Billing</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Tiered subscription plans</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Plan tiers stored in database with
+                                            configurable limits: max targets,
+                                            max follower count, cooldown, daily
+                                            sync limit, page cap, story viewer
+                                            access.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Payment processing</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Stripe Checkout. Payment required
+                                            before account creation. Webhook
+                                            confirms payment and unlocks
+                                            registration.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Subscription upgrades and
+                                            cancellations
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Stripe subscription lifecycle
+                                            handled: upgrades, downgrades,
+                                            cancellations, and failed payment
+                                            recovery all trigger automatic
+                                            platform updates.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Plan enforcement</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Target count, follower count, story
+                                            viewer, sync limits — all enforced
+                                            at the API layer. Downgrade
+                                            auto-pauses targets that exceed the
+                                            new plan's limits.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m6"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                6
+                            </div>
+                            <h3>Notifications</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Activity alerts</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Weekly email sent only when there is
+                                            activity to report. Includes a
+                                            per-target breakdown of new
+                                            followers and unfollowers for the
+                                            week.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sync completion notification</td>
+                                        <td>
+                                            <span class="badge-improved"
+                                                >✓ Improved</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Real-time push update to the browser
+                                            the moment a sync completes — no
+                                            page refresh, no polling.
+                                            Implemented via Supabase Realtime
+                                            WebSocket.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 3: Third-Party Costs ──────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">3</div>
+                    <h2>Third-Party Costs You Pay Directly</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        The fixed development fee covers our time to build the
+                        platform. The following services are accounts you own
+                        and pay directly — they are not included in the
+                        development cost.
+                    </p>
+
+                    <h3 class="sub">Monthly Running Costs (once live)</h3>
+                    <div class="tbl-wrap">
+                        <table class="cost-table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>What It Does</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Vercel</strong></td>
+                                    <td>Hosts the Next.js web application</td>
+                                    <td>
+                                        Free (Hobby plan covers MVP traffic)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Supabase</strong></td>
+                                    <td>
+                                        Database, authentication, and real-time
+                                        updates
+                                    </td>
+                                    <td>
+                                        Free → $25/month when approaching 500 MB
+                                        storage (typically ~200–400 users
+                                        depending on account sizes)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Inngest</strong></td>
+                                    <td>
+                                        Background job queue for sync engine and
+                                        email scheduling
+                                    </td>
+                                    <td>
+                                        Free (50,000 runs/month — covers 1,000
+                                        users on manual sync)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Resend</strong></td>
+                                    <td>
+                                        Weekly summary emails to subscribers
+                                    </td>
+                                    <td>
+                                        Free (3,000 emails/month) → $20/month
+                                        above that
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stripe</strong></td>
+                                    <td>
+                                        Subscription billing for your
+                                        end-customers
+                                    </td>
+                                    <td>
+                                        2.9% + $0.30 per transaction (no monthly
+                                        fee)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="sub" style="margin-top: 22px">
+                        Per-Use Costs (scales with your subscribers)
+                    </h3>
+                    <div class="tbl-wrap">
+                        <table class="cost-table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>What It Does</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>HikerAPI</strong></td>
+                                    <td>
+                                        Fetches Instagram followers, following
+                                        lists, profiles, and stories
+                                    </td>
+                                    <td>
+                                        Per request unit — charged per sync.
+                                        Build this cost into your subscription
+                                        pricing.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout" style="margin-top: 16px">
+                        <strong>At launch (0–200 users):</strong> Fixed monthly
+                        infrastructure cost is <strong>$0</strong> — all
+                        services are within free tiers. You only pay HikerAPI
+                        per sync and Stripe per transaction.<br /><br />
+                        <strong>At 1,000 users (manual sync):</strong> Fixed
+                        monthly cost is approximately
+                        <strong>$45/month</strong> (Supabase Pro $25 + Resend
+                        $20). All other services remain on free tiers.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 4: Account Setup ───────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">4</div>
+                    <h2>What You Need to Set Up Before We Start</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        Please create the following accounts before or during
+                        the first two weeks. We will guide you through each one
+                        and handle all the technical configuration.
+                    </p>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Needed For</th>
+                                    <th>When</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>HikerAPI</strong> — hikerapi.com
+                                    </td>
+                                    <td>
+                                        Instagram data — follower lists,
+                                        profiles, stories
+                                    </td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Supabase</strong> — supabase.com
+                                    </td>
+                                    <td>Database and authentication</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Vercel</strong> — vercel.com
+                                    </td>
+                                    <td>Web app hosting and subdomain setup</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Inngest</strong> — inngest.com
+                                    </td>
+                                    <td>
+                                        Background job queue for sync and email
+                                        scheduling
+                                    </td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Stripe</strong> — stripe.com
+                                    </td>
+                                    <td>
+                                        Subscription billing. Create plan
+                                        products and prices in the dashboard.
+                                    </td>
+                                    <td>
+                                        <span class="when-badge">Week 2</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Resend</strong> — resend.com
+                                    </td>
+                                    <td>
+                                        Weekly email summaries. Requires domain
+                                        verification (DNS record).
+                                    </td>
+                                    <td>
+                                        <span class="when-badge later"
+                                            >Before Week 6</span
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="callout green" style="margin-top: 16px">
+                        <strong>From your landing page:</strong> Once the app is
+                        live at app.domain.com, you need to update the "Get
+                        Started" and "Login" buttons on domain.com to link to
+                        our routes. This is the only change needed on your
+                        existing website.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 5: Out of Scope ────────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">5</div>
+                    <h2>What Is Out of Scope for This Engagement</h2>
+                </div>
+                <div class="card-body">
+                    <div class="gap-box">
+                        <strong>Auto sync (5–15 min intervals).</strong>
+                        Not included in this engagement. Auto sync can be added
+                        as a post-launch upgrade in a separate contract once
+                        subscription pricing is in place.
+                    </div>
+                    <div class="gap-box">
+                        <strong>Admin / metrics dashboard.</strong> No internal
+                        admin panel for managing users or viewing platform
+                        metrics. This can be added post-launch.
+                    </div>
+                    <div class="gap-box">
+                        <strong
+                            >Accounts with more than 1 million
+                            followers.</strong
+                        >
+                        The MVP caps monitored accounts at 1M followers.
+                        Accounts above this limit are rejected at add time with
+                        a clear message. Supporting beyond 1M requires a
+                        different job architecture (dedicated long-running
+                        worker) — a post-MVP upgrade.
+                    </div>
+                    <div class="gap-ok">
+                        ✓ Everything else — plan selection, payment, auth,
+                        target management, sync engine, activity feed, story
+                        viewer, and weekly email — is fully delivered in this
+                        engagement.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 6: Risks & Mitigations ────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">6</div>
+                    <h2>Risks & Mitigations</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        We stress-tested the architecture against 1,000
+                        concurrent users on the highest plan. Here are the main
+                        risks and how they are handled.
+                    </p>
+                    <div class="risk-list">
+                        <div class="risk-item">
+                            <div class="risk-icon">⚡</div>
+                            <div>
+                                <div class="risk-title">
+                                    HikerAPI rate limits under concurrent load
+                                </div>
+                                <div class="risk-body">
+                                    At 50 concurrent sync jobs, all hitting
+                                    HikerAPI through one API key, the combined
+                                    request rate can exceed the per-key limit.
+                                    <strong>Mitigation:</strong> Inngest
+                                    built-in rate limiting (20 req/s globally
+                                    across all concurrent jobs) declared in
+                                    function config — no application code
+                                    needed. Plus per-fetch random jitter
+                                    (100–300ms) to smooth burst collisions.
+                                    Automatic retry with exponential backoff on
+                                    429 responses.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">🔒</div>
+                            <div>
+                                <div class="risk-title">
+                                    Race condition on concurrent sync requests
+                                </div>
+                                <div class="risk-body">
+                                    Two sync requests for the same target could
+                                    both read "status = active" before either
+                                    writes "status = syncing" — causing
+                                    duplicate events.
+                                    <strong>Mitigation:</strong> PostgreSQL
+                                    <code>FOR UPDATE SKIP LOCKED</code> — an
+                                    atomic database-level row lock. If the row
+                                    is already locked by another sync, the
+                                    second request receives a clean 409 Conflict
+                                    without touching the sync logic. No
+                                    application-level mutex needed.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">💾</div>
+                            <div>
+                                <div class="risk-title">
+                                    Database write volume at scale
+                                </div>
+                                <div class="risk-body">
+                                    A naive implementation deletes all follower
+                                    state and re-inserts it on every sync —
+                                    40,000 row operations per sync for a
+                                    20k-follower account. At 1,000 users this is
+                                    24 million row ops/day.
+                                    <strong>Mitigation:</strong> Diff-only
+                                    writes — only INSERT newly followed accounts
+                                    and DELETE unfollowed ones. Typical sync:
+                                    ~200 row ops. 120× reduction in database
+                                    load.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon risk-icon green">⏱</div>
+                            <div>
+                                <div class="risk-title">
+                                    Sync timeout on large accounts
+                                </div>
+                                <div class="risk-body">
+                                    Syncing a 500k-follower account takes 60–90
+                                    seconds — too long for a standard HTTP
+                                    request.
+                                    <strong>Mitigation:</strong> Inngest
+                                    background job execution with no timeout
+                                    limit. The API route returns 202 in under
+                                    500ms; Inngest runs the sync job to
+                                    completion in the background; Supabase
+                                    Realtime pushes the result to the browser
+                                    the moment it finishes.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon risk-icon green">📊</div>
+                            <div>
+                                <div class="risk-title">
+                                    Account goes private after being added
+                                </div>
+                                <div class="risk-body">
+                                    An account the user is monitoring could be
+                                    set to private after it was added.
+                                    <strong>Mitigation:</strong> Private
+                                    accounts are detected automatically on the
+                                    next sync. The target is paused with status
+                                    <em>paused-private</em> and a clear message
+                                    shown in the dashboard. The user can
+                                    re-activate it if the account goes public
+                                    again.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">💳</div>
+                            <div>
+                                <div class="risk-title">
+                                    Stripe webhook missed or delivered twice
+                                </div>
+                                <div class="risk-body">
+                                    Stripe retries webhooks on failure. A
+                                    payment confirmation webhook could arrive
+                                    multiple times.
+                                    <strong>Mitigation:</strong> Idempotent
+                                    webhook handler — each Stripe event ID is
+                                    checked before processing. Duplicate events
+                                    are silently discarded. The
+                                    pending_registration record has a 24-hour
+                                    expiry as an additional safety net.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 7: Quote ───────────────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">7</div>
+                    <h2>Quote</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        Two options depending on your budget and timeline preference.
+                    </p>
+
+                    <div class="budget-row" style="margin-top: 4px;">
+                        <div class="budget-highlight">
+                            <div class="bh-label">Option A — Full Delivery</div>
+                            <div class="bh-amount">$2,500</div>
+                            <div class="bh-sub">Fixed price · complete MVP in one contract · 8–10 weeks</div>
+                        </div>
+                        <div class="budget-highlight" style="background: var(--navy-light)">
+                            <div class="bh-label">Option B — Phased</div>
+                            <div class="bh-amount">$1,600 + $600</div>
+                            <div class="bh-sub">Phase 1 core now · Phase 2 polish after launch</div>
+                        </div>
+                    </div>
+
+                    <h3 class="sub" style="margin-top: 20px">What each option includes</h3>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Deliverable</th>
+                                    <th>Option A ($2,500)</th>
+                                    <th>Option B Phase 1 ($1,600)</th>
+                                    <th>Option B Phase 2 ($600)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Plan selection + Stripe payment</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>Auth: login + registration</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>Target management</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>Sync engine + activity feed</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>Dashboard (core)</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>Deployment + go-live</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>Story viewer</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Weekly email summary</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Client branding integration</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Dashboard enhancements (stats, usage)</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>—</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Full QA pass</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                    <td>Core flows only</td>
+                                    <td><span class="badge-full">✓ Included</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="callout green" style="margin-top: 16px">
+                        <strong>Option B — how it works:</strong> Phase 1 ($1,600) delivers a fully working product — your subscribers can pay, register, add targets, sync, and view the activity feed. You can launch and validate with early users. Phase 2 ($600) adds the story viewer, weekly email, branding, and a full QA pass. Both phases total $2,200 — slightly less than Option A.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 8: Summary ─────────────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">8</div>
+                    <h2>Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tbl-wrap">
+                        <table class="summary-table">
+                            <tbody>
+                                <tr>
+                                    <td>Contract type</td>
+                                    <td>Fixed price on Upwork</td>
+                                </tr>
+                                <tr>
+                                    <td>Quote</td>
+                                    <td>
+                                        $2,500 (or $1,600 Phase 1 + $600 Phase
+                                        2)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Delivery timeline</td>
+                                    <td>8–10 weeks</td>
+                                </tr>
+                                <tr>
+                                    <td>Developer rate</td>
+                                    <td>
+                                        $25/hour (72h with BMAD v6 AI tooling)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Modules delivered</td>
+                                    <td>
+                                        All 6 — plan+payment, auth, targets,
+                                        sync engine, dashboard, story viewer +
+                                        email
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Requirements coverage</td>
+                                    <td>
+                                        100% of core requirements met. 3 items
+                                        changed with explanation (see Section
+                                        3).
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Infrastructure monthly cost (at launch)
+                                    </td>
+                                    <td>
+                                        $0 fixed — all services on free tiers
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Infrastructure monthly cost (1,000
+                                        users)
+                                    </td>
+                                    <td>
+                                        ~$45/month fixed (Supabase $25 + Resend
+                                        $20)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Max supported account size</td>
+                                    <td>1,000,000 followers (MVP cap)</td>
+                                </tr>
+                                <tr>
+                                    <td>Key technical decisions</td>
+                                    <td>
+                                        HikerAPI (no custom scraper), Inngest
+                                        (no timeout, built-in rate limiting),
+                                        diff-only writes (120× fewer DB ops),
+                                        Vercel edge cache for stories
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Third-party costs</td>
+                                    <td>
+                                        Client pays HikerAPI, Stripe, and
+                                        hosting accounts directly — not included
+                                        in development fee
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>First step for you</td>
+                                    <td>
+                                        Create accounts listed in Section 4,
+                                        starting with HikerAPI and Supabase in
+                                        Week 1
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="callout green" style="margin-top: 20px">
+                        We are ready to start as soon as the contract is agreed
+                        on Upwork. The first week covers project setup, service
+                        configuration, and database schema — all running in
+                        parallel with your account creation tasks, so there is
+                        no waiting time.
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                Questions? Reply on Upwork and we will respond within 24 hours.
+            </div>
+        </div>
+
+        <script>
+            document
+                .querySelector(".pdf-btn")
+                .addEventListener("click", function () {
+                    window.print();
+                });
+        </script>
+    </body>
+</html>

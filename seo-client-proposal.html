@@ -1,0 +1,2219 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Project Proposal — Geo Station</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* ─── Reset & Base ─────────────────────────────────────────────── */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --navy: #1e3a5f;
+                --navy-light: #2d5282;
+                --blue: #2563eb;
+                --blue-light: #dbeafe;
+                --blue-xlight: #eff6ff;
+                --green: #16a34a;
+                --green-light: #dcfce7;
+                --amber: #d97706;
+                --amber-light: #fef3c7;
+                --slate-50: #f8fafc;
+                --slate-100: #f1f5f9;
+                --slate-200: #e2e8f0;
+                --slate-400: #94a3b8;
+                --slate-600: #475569;
+                --slate-800: #1e293b;
+                --text: #0f172a;
+                --radius: 10px;
+                --shadow-sm:
+                    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+                --shadow:
+                    0 4px 16px rgba(0, 0, 0, 0.08),
+                    0 1px 4px rgba(0, 0, 0, 0.04);
+                --shadow-lg:
+                    0 10px 30px rgba(0, 0, 0, 0.1),
+                    0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            html {
+                font-size: 15px;
+                scroll-behavior: smooth;
+            }
+
+            body {
+                font-family: "Inter", system-ui, sans-serif;
+                background: var(--slate-100);
+                color: var(--text);
+                line-height: 1.7;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ─── PDF Button Bar ────────────────────────────────────────────── */
+            .pdf-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                background: var(--navy);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 32px;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+            }
+            .pdf-bar-title {
+                color: rgba(255, 255, 255, 0.75);
+                font-size: 0.8rem;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+            .pdf-btn {
+                background: #fff;
+                color: var(--navy);
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-family: inherit;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition:
+                    background 0.15s,
+                    box-shadow 0.15s;
+            }
+            .pdf-btn:hover {
+                background: var(--blue-light);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            }
+            .pdf-btn svg {
+                width: 16px;
+                height: 16px;
+                flex-shrink: 0;
+            }
+            .pdf-tip {
+                font-size: 0.72rem;
+                color: rgba(255, 255, 255, 0.5);
+                line-height: 1.5;
+                max-width: 340px;
+                text-align: right;
+            }
+            .pdf-tip strong {
+                color: rgba(255, 255, 255, 0.8);
+                font-weight: 600;
+            }
+
+            /* ─── Page Layout ───────────────────────────────────────────────── */
+            .page {
+                max-width: 920px;
+                margin: 0 auto;
+                padding: 88px 24px 64px;
+            }
+
+            /* ─── Hero ──────────────────────────────────────────────────────── */
+            .hero {
+                background: linear-gradient(
+                    135deg,
+                    var(--navy) 0%,
+                    var(--navy-light) 100%
+                );
+                border-radius: var(--radius);
+                padding: 44px 48px;
+                margin-bottom: 32px;
+                box-shadow: var(--shadow-lg);
+                color: #fff;
+            }
+            .hero-label {
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.55);
+                margin-bottom: 10px;
+            }
+            .hero h1 {
+                font-size: 1.9rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                line-height: 1.2;
+                margin-bottom: 28px;
+            }
+            .hero-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px 32px;
+            }
+            .hero-meta-item {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .hero-meta-item .label {
+                font-size: 0.68rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.5);
+            }
+            .hero-meta-item .value {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            /* ─── Cards / Sections ──────────────────────────────────────────── */
+            .card {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                margin-bottom: 24px;
+                overflow: hidden;
+            }
+            .card-header {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                padding: 22px 28px;
+                border-bottom: 1px solid var(--slate-200);
+            }
+            .section-num {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                background: var(--navy);
+                color: #fff;
+                font-size: 0.75rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .card-header h2 {
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: var(--navy);
+                letter-spacing: -0.01em;
+            }
+            .card-body {
+                padding: 24px 28px;
+            }
+
+            /* ─── Preamble Card (no section num) ────────────────────────────── */
+            .preamble {
+                background: var(--blue-xlight);
+                border: 1px solid #bfdbfe;
+                border-radius: var(--radius);
+                padding: 22px 28px;
+                margin-bottom: 24px;
+            }
+            .preamble h2 {
+                font-size: 1rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin-bottom: 10px;
+            }
+            .preamble ul {
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .preamble ul li {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                font-size: 0.9rem;
+                color: var(--slate-800);
+            }
+            .preamble ul li::before {
+                content: "✓";
+                color: var(--blue);
+                font-weight: 700;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+            .preamble .closing {
+                margin-top: 14px;
+                font-size: 0.9rem;
+                color: var(--slate-600);
+                font-style: italic;
+            }
+
+            /* ─── Module Grid ───────────────────────────────────────────────── */
+            .module-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                margin-top: 4px;
+            }
+            .module-card {
+                border: 1px solid var(--slate-200);
+                border-radius: 8px;
+                padding: 16px 18px;
+                display: flex;
+                gap: 14px;
+                align-items: flex-start;
+            }
+            .module-num {
+                width: 28px;
+                height: 28px;
+                border-radius: 7px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #fff;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+            .m1 {
+                background: #2563eb;
+            }
+            .m2 {
+                background: #7c3aed;
+            }
+            .m3 {
+                background: #0891b2;
+            }
+            .m4 {
+                background: #d97706;
+            }
+            .m5 {
+                background: #16a34a;
+            }
+            .m6 {
+                background: #dc2626;
+            }
+
+            .module-card-content {
+            }
+            .module-card-name {
+                font-size: 0.88rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin-bottom: 4px;
+            }
+            .module-card-desc {
+                font-size: 0.82rem;
+                color: var(--slate-600);
+                line-height: 1.5;
+            }
+
+            /* ─── Module Subsections ────────────────────────────────────────── */
+            .module-section {
+                margin-bottom: 30px;
+            }
+            .module-section:last-child {
+                margin-bottom: 0;
+            }
+            .module-section-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+            .module-section-header h3 {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--navy);
+            }
+
+            /* ─── Tables ────────────────────────────────────────────────────── */
+            .tbl-wrap {
+                overflow-x: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.84rem;
+            }
+            thead tr {
+                background: var(--slate-100);
+            }
+            thead th {
+                padding: 10px 14px;
+                text-align: left;
+                font-size: 0.72rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--slate-600);
+                border-bottom: 2px solid var(--slate-200);
+                white-space: nowrap;
+            }
+            tbody tr {
+                border-bottom: 1px solid var(--slate-100);
+            }
+            tbody tr:last-child {
+                border-bottom: none;
+            }
+            tbody tr:hover {
+                background: var(--slate-50);
+            }
+            tbody td {
+                padding: 11px 14px;
+                vertical-align: top;
+                color: var(--slate-800);
+                line-height: 1.5;
+            }
+            tbody td:first-child {
+                font-weight: 500;
+                color: var(--text);
+            }
+
+            /* covered badges */
+            .badge-full {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: var(--green-light);
+                color: var(--green);
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .badge-improved {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: #ede9fe;
+                color: #6d28d9;
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            .badge-bonus {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: #fef3c7;
+                color: #92400e;
+                font-size: 0.72rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+                white-space: nowrap;
+            }
+            /* alt row colors for cost tables */
+            .cost-table tbody tr:nth-child(even) {
+                background: var(--slate-50);
+            }
+
+            /* summary table highlight */
+            .summary-table tbody td:first-child {
+                color: var(--slate-600);
+                font-weight: 500;
+            }
+            .summary-table tbody td:last-child {
+                font-weight: 600;
+                color: var(--navy);
+            }
+
+            /* ─── Callout Boxes ─────────────────────────────────────────────── */
+            .callout {
+                border-left: 4px solid var(--blue);
+                background: var(--blue-xlight);
+                border-radius: 0 8px 8px 0;
+                padding: 14px 18px;
+                margin: 16px 0;
+                font-size: 0.87rem;
+                color: var(--slate-800);
+                line-height: 1.6;
+            }
+            .callout strong {
+                color: var(--navy);
+            }
+            .callout.amber {
+                border-left-color: var(--amber);
+                background: var(--amber-light);
+            }
+            .callout.green {
+                border-left-color: var(--green);
+                background: var(--green-light);
+            }
+            .callout ul {
+                padding-left: 18px;
+                margin-top: 8px;
+            }
+            .callout ul li {
+                margin-bottom: 4px;
+            }
+
+            /* ─── Comparison grid ───────────────────────────────────────────── */
+            .compare-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            .compare-col {
+                border: 1px solid var(--slate-200);
+                border-radius: 8px;
+                padding: 18px 20px;
+            }
+            .compare-col h4 {
+                font-size: 0.8rem;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                margin-bottom: 12px;
+            }
+            .compare-col.ahead h4 {
+                color: var(--green);
+            }
+            .compare-col.behind h4 {
+                color: var(--amber);
+            }
+            .compare-col ul {
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .compare-col ul li {
+                font-size: 0.86rem;
+                color: var(--slate-800);
+                display: flex;
+                gap: 8px;
+                align-items: flex-start;
+                line-height: 1.5;
+            }
+            .compare-col.ahead ul li::before {
+                content: "↑";
+                color: var(--green);
+                font-weight: 700;
+                flex-shrink: 0;
+            }
+            .compare-col.behind ul li::before {
+                content: "→";
+                color: var(--amber);
+                font-weight: 700;
+                flex-shrink: 0;
+            }
+            .compare-col .strength-title {
+                font-weight: 700;
+                color: var(--navy);
+                font-size: 0.87rem;
+            }
+            .compare-col .strength-body {
+                font-size: 0.83rem;
+                color: var(--slate-600);
+                margin-top: 2px;
+            }
+
+            /* ─── Risk List ─────────────────────────────────────────────────── */
+            .risk-list {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+            }
+            .risk-item {
+                display: flex;
+                gap: 14px;
+                align-items: flex-start;
+                border: 1px solid var(--slate-200);
+                border-radius: 8px;
+                padding: 16px 18px;
+            }
+            .risk-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: var(--amber-light);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                font-size: 1rem;
+            }
+            .risk-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin-bottom: 4px;
+            }
+            .risk-body {
+                font-size: 0.84rem;
+                color: var(--slate-600);
+                line-height: 1.55;
+            }
+
+            /* ─── Accounts table ────────────────────────────────────────────── */
+            .when-badge {
+                display: inline-block;
+                background: var(--navy);
+                color: #fff;
+                font-size: 0.68rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 20px;
+            }
+            .when-badge.later {
+                background: var(--slate-400);
+            }
+
+            /* ─── Phase 1 gap ───────────────────────────────────────────────── */
+            .gap-box {
+                border: 1.5px solid #fde68a;
+                background: #fffbeb;
+                border-radius: 8px;
+                padding: 18px 22px;
+                font-size: 0.88rem;
+                color: var(--slate-800);
+                line-height: 1.65;
+            }
+            .gap-box strong {
+                color: var(--navy);
+            }
+            .gap-ok {
+                background: var(--green-light);
+                border: 1.5px solid #bbf7d0;
+                border-radius: 8px;
+                padding: 14px 22px;
+                font-size: 0.88rem;
+                color: #166534;
+                margin-top: 14px;
+                font-weight: 500;
+            }
+
+            /* ─── Typography helpers ────────────────────────────────────────── */
+            p {
+                margin-bottom: 10px;
+                font-size: 0.9rem;
+                color: var(--slate-800);
+                line-height: 1.7;
+            }
+            p:last-child {
+                margin-bottom: 0;
+            }
+            strong {
+                font-weight: 700;
+            }
+            .section-intro {
+                font-size: 0.9rem;
+                color: var(--slate-600);
+                margin-bottom: 18px;
+            }
+            h3.sub {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--navy);
+                margin: 20px 0 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-size: 0.75rem;
+            }
+            .divider {
+                border: none;
+                border-top: 1px solid var(--slate-200);
+                margin: 22px 0;
+            }
+
+            /* ─── Footer ────────────────────────────────────────────────────── */
+            .footer {
+                text-align: center;
+                font-size: 0.8rem;
+                color: var(--slate-400);
+                padding: 24px 0 8px;
+            }
+
+            /* ─── Print / PDF ───────────────────────────────────────────────── */
+
+            /* @page controls the page box — sets margins and injects
+               a styled page counter into the bottom-right corner.
+               Chrome/Edge honour @page margin boxes since ~108.           */
+            @page {
+                size: A4;
+                /* Top margin is small — user must uncheck "Headers and footers"
+                   in Chrome's print dialog to remove the browser-injected line.
+                   We handle page numbers ourselves below.                  */
+                margin: 14mm 18mm 22mm 18mm;
+
+                @bottom-right {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-family: "Inter", sans-serif;
+                    font-size: 8pt;
+                    font-weight: 600;
+                    color: #94a3b8;
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                }
+
+                @bottom-left {
+                    content: "Geo Station — Project Proposal";
+                    font-family: "Inter", sans-serif;
+                    font-size: 8pt;
+                    color: #cbd5e1;
+                    letter-spacing: 0.04em;
+                }
+            }
+
+            @media print {
+                .pdf-bar {
+                    display: none !important;
+                }
+                body {
+                    background: #fff;
+                }
+                .page {
+                    padding: 0;
+                    max-width: 100%;
+                }
+                .card,
+                .preamble,
+                .hero {
+                    box-shadow: none;
+                    border: 1px solid #ddd;
+                }
+                .hero {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .badge-full,
+                .badge-improved,
+                .badge-bonus,
+                .section-num,
+                .module-num,
+                .when-badge,
+                .callout,
+                .gap-box,
+                .gap-ok,
+                .compare-col.ahead h4,
+                .compare-col.behind h4 {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .card {
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                }
+                .module-grid {
+                    page-break-inside: avoid;
+                }
+                table {
+                    page-break-inside: auto;
+                }
+                tr {
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                }
+                thead {
+                    display: table-header-group;
+                }
+                .compare-grid {
+                    page-break-inside: avoid;
+                }
+                /* Give each major section a little breathing room at page breaks */
+                .card + .card {
+                    margin-top: 12px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ─── PDF Bar ──────────────────────────────────────────────────────── -->
+        <div class="pdf-bar">
+            <span class="pdf-bar-title">Project Proposal — Geo Station</span>
+            <div style="display: flex; align-items: center; gap: 16px">
+                <span class="pdf-tip">
+                    In print dialog &rarr; set
+                    <strong>Destination: Save as PDF</strong> &rarr; uncheck
+                    <strong>Headers and footers</strong>
+                </span>
+                <button class="pdf-btn" onclick="window.print()">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                        />
+                    </svg>
+                    Save as PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- ─── Page ─────────────────────────────────────────────────────────── -->
+        <div class="page">
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-label">Project Proposal</div>
+                <h1>Geo Station</h1>
+                <div class="hero-meta">
+                    <div class="hero-meta-item">
+                        <span class="label">Prepared for</span>
+                        <span class="value">Jane Alan</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Date</span>
+                        <span class="value">March 2026</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Contract</span>
+                        <span class="value">Hourly — $25/hour via Upwork</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Hours / week</span>
+                        <span class="value">30 hours</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="label">Timeline</span>
+                        <span class="value">3 months</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preamble -->
+            <div class="preamble">
+                <h2>A Note Before We Begin</h2>
+                <ul>
+                    <li>Fully reviewed your requirements document</li>
+                    <li>
+                        Audited the existing competitor product (localrank.so) —
+                        including a live account walkthrough
+                    </li>
+                    <li>Researched how every feature works technically</li>
+                    <li>
+                        Designed the full architecture, database schema, and
+                        module-by-module implementation plan
+                    </li>
+                    <li>
+                        Reviewed the previous developer's codebase and
+                        identified what can be reused
+                    </li>
+                </ul>
+                <p class="closing">
+                    We are not starting from zero on day one. The planning,
+                    design, and technical decisions are already made. We are
+                    ready to build.
+                </p>
+            </div>
+
+            <!-- ── Section 1: What We Are Building ──────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">1</div>
+                    <h2>What We Are Building</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        A full-stack local SEO SaaS platform for agencies — the
+                        same product category as localrank.so, with meaningful
+                        technical improvements in the areas that matter most to
+                        your agency clients. The platform has six modules that
+                        work together:
+                    </p>
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-num m1">1</div>
+                            <div class="module-card-content">
+                                <div class="module-card-name">
+                                    Local Rank Tracker
+                                </div>
+                                <div class="module-card-desc">
+                                    Shows exactly where a business ranks on
+                                    Google Maps across a geographic area — not a
+                                    single number, but a visual grid showing
+                                    rank at every point in the target zone.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m2">2</div>
+                            <div class="module-card-content">
+                                <div class="module-card-name">
+                                    AI Recommendation Monitor
+                                </div>
+                                <div class="module-card-desc">
+                                    Automatically asks ChatGPT, Claude, Gemini,
+                                    and Perplexity whether they recommend a
+                                    business — and gives a weighted score
+                                    agencies can show clients month after month.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m3">3</div>
+                            <div class="module-card-content">
+                                <div class="module-card-name">
+                                    LLM Citation Builder
+                                </div>
+                                <div class="module-card-desc">
+                                    Generates "Best X in City" articles
+                                    featuring the client's business and
+                                    distributes them to news sites so AI models
+                                    can find and cite them.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m4">4</div>
+                            <div class="module-card-content">
+                                <div class="module-card-name">
+                                    Local Citations Builder
+                                </div>
+                                <div class="module-card-desc">
+                                    Submits the business's name, address, and
+                                    phone to the 20 highest-authority
+                                    directories in one click — the traditional
+                                    foundation of local SEO. Additional
+                                    directories added post-launch.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m5">5</div>
+                            <div class="module-card-content">
+                                <div class="module-card-name">
+                                    GBP Automation
+                                </div>
+                                <div class="module-card-desc">
+                                    Manages Google Business Profiles for
+                                    multiple clients from one dashboard — posts,
+                                    review replies, and review collection
+                                    campaigns.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-num m6">6</div>
+                            <div class="module-card-content">
+                                <div class="module-card-name">
+                                    Local Leads Database
+                                </div>
+                                <div class="module-card-desc">
+                                    A prospecting tool that lets the agency find
+                                    new business clients by searching 210
+                                    million+ contacts by location, industry, and
+                                    job title.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 2: Requirements Coverage ─────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">2</div>
+                    <h2>Your Requirements — Coverage Check</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        Every feature from your requirements document, and
+                        exactly how we cover it.
+                    </p>
+
+                    <!-- Module 1 -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m1"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                1
+                            </div>
+                            <h3>Module 1 — Local Rank Tracker</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Grid scanning (business + keyword +
+                                            grid size + radius)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            3×3, 5×5, 7×7, and 9×9 grids
+                                            supported. Configurable radius.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Visual heatmap (green 1–3, light
+                                            green 4–6, yellow/red/grey 7+)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Exact colour scheme as specified,
+                                            rendered as interactive pins on
+                                            Mapbox.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Scheduling (one-time, weekly,
+                                            monthly)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            All three options; scans run
+                                            automatically on schedule.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            White-label reports (shareable URL,
+                                            no platform branding)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Unique shareable URL per report;
+                                            custom agency/client name on PDF.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            SerpAPI → Convex → Mapbox data flow
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>Exact stack as specified.</td>
+                                    </tr>
+                                    <tr style="background: #fffbeb">
+                                        <td>
+                                            <strong
+                                                >Bonus — not in your
+                                                spec</strong
+                                            >
+                                        </td>
+                                        <td>
+                                            <span class="badge-bonus"
+                                                >★ Bonus</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Pins fill in one by one as the scan
+                                            runs — user watches the map build
+                                            live, no spinner.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Module 2 -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m2"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                2
+                            </div>
+                            <h3>Module 2 — AI Recommendation Monitor</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Query ChatGPT, Claude, Gemini, and
+                                            Perplexity
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            All four queried simultaneously in
+                                            parallel.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>User-defined prompt input</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            User writes any natural-language
+                                            query.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Visibility score (% of models
+                                            recommending)
+                                        </td>
+                                        <td>
+                                            <span class="badge-improved"
+                                                >✓ Improved</span
+                                            >
+                                        </td>
+                                        <td>We go further — see note below.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Scan history (log of previous
+                                            scores)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Full history with trend chart over
+                                            time.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="callout" style="margin-top: 14px">
+                            <strong
+                                >Important improvement over your spec:</strong
+                            >
+                            Your spec defines visibility as a simple percentage
+                            (e.g. 2/4 models = 50%). We use a smarter
+                            four-component scoring system:
+                            <ul>
+                                <li>Rank position — 40% weight</li>
+                                <li>Mention rate — 30% weight</li>
+                                <li>Share of voice — 20% weight</li>
+                                <li>Sentiment — 10% weight</li>
+                            </ul>
+                            <br />A rank #1 glowing recommendation scores ~78%.
+                            A negative buried mention scores ~19%. Both would
+                            score 50% under a simple percentage. This is a
+                            significant differentiator over localrank.so.
+                            <br /><br /><strong>Also:</strong> We use live web
+                            search on all four AI providers. The models search
+                            the current web when answering — not stored training
+                            data from 2023. A business that improved its local
+                            SEO last month will be scored correctly.
+                        </div>
+                    </div>
+
+                    <!-- Module 3 -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m3"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                3
+                            </div>
+                            <h3>Module 3 — LLM Citation Builder</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Campaign setup (keyword + brand +
+                                            destination URL)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>Simple campaign form.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Real-time status tracking ("501/501
+                                            Published")
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Live counter updates as articles are
+                                            distributed.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Network distribution (PBN or mass PR
+                                            distribution)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Via PR wire distribution — see
+                                            important note below.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="callout amber" style="margin-top: 14px">
+                            <strong
+                                >Important note on distribution — please
+                                read:</strong
+                            ><br /><br />
+                            Your requirements mention two options: a Private
+                            Blog Network (PBN) or mass PR distribution tools. We
+                            have chosen
+                            <strong>PR wire distribution</strong> for the
+                            following reasons:
+                            <ul>
+                                <li>
+                                    A PBN means owning and maintaining hundreds
+                                    of websites — a separate months-long project
+                                    on its own.
+                                </li>
+                                <li>
+                                    PR wire services (e.g. EIN Presswire)
+                                    already have 200–500 real, indexed news and
+                                    media sites. One API call publishes your
+                                    article across all of them within hours.
+                                </li>
+                                <li>
+                                    Real news sites carry stronger domain
+                                    authority than self-built blogs — better
+                                    indexation and more credibility with AI
+                                    tools like Perplexity.
+                                </li>
+                                <li>
+                                    PR wire distribution is a legitimate,
+                                    Google-approved practice. PBNs carry Google
+                                    penalty risk.
+                                </li>
+                            </ul>
+                            <br /><strong>What this means for you:</strong> You
+                            create an account with EIN Presswire (free tier
+                            available), enter your API key in the platform once,
+                            and the platform handles everything. The cost per
+                            distribution job (~$50–$99) is paid directly from
+                            your account to the PR wire service — not charged
+                            through the platform.<br /><br />
+                            This approach is actually
+                            <strong>better</strong> than what localrank.so has
+                            built. Their 550 self-built domains carry real
+                            Google penalty risk. Your platform uses real,
+                            credible news sites.
+                        </div>
+                    </div>
+
+                    <!-- Module 4 -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m4"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                4
+                            </div>
+                            <h3>Module 4 — Local Citations Builder</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Business profile setup (central NAP
+                                            data)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            One profile per location, reused
+                                            across all modules.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bulk submission to directories</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Phase 1 covers 20 high-authority
+                                            directories with live progress per
+                                            directory. Expanding to 100+ is
+                                            Phase 2.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Dashboard tracking (live citation
+                                            count)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Real-time status per directory;
+                                            total live count shown.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Boost functionality</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Boost upsell for faster indexation
+                                            and additional backlink building.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Module 5 -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m5"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                5
+                            </div>
+                            <h3>Module 5 — GBP Automation</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            OAuth integration ("Connect Google
+                                            Account")
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Standard Google OAuth flow; agencies
+                                            can connect multiple client
+                                            accounts.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Multi-location management</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            All locations across all connected
+                                            Google accounts in one dashboard.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Post scheduling</td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Create, schedule, and auto-publish
+                                            GBP posts.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Review management with AI reply
+                                            templates
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            AI generates a reply draft for each
+                                            review; you approve it before it
+                                            goes live.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="callout green" style="margin-top: 14px">
+                            <strong>Note on review replies:</strong> We have
+                            built in an approval step — the AI writes the reply,
+                            you read it, then you publish it. Sending
+                            AI-generated replies directly to customers without a
+                            human check is a risk for agency-client
+                            relationships. You are in control.
+                        </div>
+                    </div>
+
+                    <!-- Module 6 -->
+                    <div class="module-section">
+                        <div class="module-section-header">
+                            <div
+                                class="module-num m6"
+                                style="
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 5px;
+                                    font-size: 0.68rem;
+                                "
+                            >
+                                6
+                            </div>
+                            <h3>Module 6 — Local Leads Database</h3>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Requirement</th>
+                                        <th>Status</th>
+                                        <th>How</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Search and filter (location, job
+                                            title, industry)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>All filters supported.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Data table (name, company, job
+                                            title, location)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Clean table view; public data shown
+                                            without credits.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Credit system (unlock email / phone)
+                                        </td>
+                                        <td>
+                                            <span class="badge-full"
+                                                >✓ Full</span
+                                            >
+                                        </td>
+                                        <td>
+                                            Credits deducted at unlock; email
+                                            and phone revealed on demand.
+                                        </td>
+                                    </tr>
+                                    <tr style="background: #fffbeb">
+                                        <td>
+                                            <strong
+                                                >Bonus — not in your
+                                                spec</strong
+                                            >
+                                        </td>
+                                        <td>
+                                            <span class="badge-bonus"
+                                                >★ Bonus</span
+                                            >
+                                        </td>
+                                        <td>
+                                            210 million+ contacts available (vs.
+                                            15 million on localrank.so). Powered
+                                            by Apollo.io — 14× more data.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 3: Third-Party Costs ─────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">3</div>
+                    <h2>Third-Party Costs You Need to Budget For</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        The development fee ($25/hour) covers our time to build
+                        the platform. The following services are paid by you
+                        directly — they are not included in the development
+                        cost.
+                    </p>
+
+                    <h3 class="sub">
+                        Monthly Running Costs (once the platform is live)
+                    </h3>
+                    <div class="tbl-wrap">
+                        <table class="cost-table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>What It Is</th>
+                                    <th>Estimated Monthly Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>SerpAPI</strong></td>
+                                    <td>
+                                        Powers the Local Rank Tracker — queries
+                                        Google Maps at each GPS point
+                                    </td>
+                                    <td>$50–$150/month</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Convex</strong></td>
+                                    <td>
+                                        Platform database and backend
+                                        infrastructure
+                                    </td>
+                                    <td>Free tier → ~$25/month at scale</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vercel</strong></td>
+                                    <td>Hosting for the web application</td>
+                                    <td>Free tier → $20/month Pro</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Clerk</strong></td>
+                                    <td>
+                                        User login, workspaces, and team
+                                        management
+                                    </td>
+                                    <td>Free up to 10,000 MAU → $25/month</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Resend</strong></td>
+                                    <td>
+                                        Email notifications (scan complete,
+                                        alerts, reports)
+                                    </td>
+                                    <td>Free up to 3,000/month → ~$20/month</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Railway</strong></td>
+                                    <td>
+                                        Background service for directory form
+                                        submissions (Module 4)
+                                    </td>
+                                    <td>~$15/month</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stripe</strong></td>
+                                    <td>
+                                        Payment processing for your
+                                        end-customers
+                                    </td>
+                                    <td>2.9% + 30¢ per transaction</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sentry</strong></td>
+                                    <td>
+                                        Error monitoring — alerts you if
+                                        something breaks
+                                    </td>
+                                    <td>Free tier available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="sub" style="margin-top: 22px">
+                        Per-Use Costs (you pay as your customers use the
+                        platform)
+                    </h3>
+                    <div class="tbl-wrap">
+                        <table class="cost-table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>What It Is</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>OpenAI API</strong></td>
+                                    <td>
+                                        AI Monitor scanning (ChatGPT) + LLM
+                                        Citation article generation
+                                    </td>
+                                    <td>~$0.007/scan · ~$0.05/article</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Anthropic API</strong></td>
+                                    <td>AI Monitor scanning (Claude)</td>
+                                    <td>~$0.014/scan</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Google Gemini API</strong></td>
+                                    <td>AI Monitor scanning (Gemini)</td>
+                                    <td>~$0.005/scan</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Perplexity API</strong></td>
+                                    <td>AI Monitor scanning (Perplexity)</td>
+                                    <td>~$0.002/scan</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Apollo.io</strong></td>
+                                    <td>
+                                        Leads Database — contact data fetched at
+                                        unlock time
+                                    </td>
+                                    <td>~$49–$99/month for API access</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>PR Wire</strong> (EIN Presswire)
+                                    </td>
+                                    <td>
+                                        Distributes LLM Citation articles to
+                                        news sites
+                                    </td>
+                                    <td>~$50–$99 per campaign</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>2captcha / CapSolver</strong>
+                                    </td>
+                                    <td>
+                                        Solves CAPTCHAs during directory
+                                        submissions (Module 4)
+                                    </td>
+                                    <td>~$0.10 per citation job</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mapbox</strong></td>
+                                    <td>Map rendering for the rank tracker</td>
+                                    <td>Free tier (50,000 loads/month)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="sub" style="margin-top: 22px">
+                        One-Time Setup Costs
+                    </h3>
+                    <div class="tbl-wrap">
+                        <table class="cost-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Cost</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong
+                                            >Stripe account verification</strong
+                                        >
+                                    </td>
+                                    <td>Free</td>
+                                    <td>
+                                        Standard business verification process
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 4: Account Setup ──────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">4</div>
+                    <h2>What You Need to Set Up Before We Start</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        To avoid delays, please create the following accounts
+                        before or during the first two weeks. We will guide you
+                        through each one.
+                    </p>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Needed For</th>
+                                    <th>When</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>SerpAPI</strong> — serpapi.com
+                                    </td>
+                                    <td>Module 1 — Rank Tracker</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>OpenAI</strong> —
+                                        platform.openai.com
+                                    </td>
+                                    <td>Modules 2 + 3</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Anthropic</strong> —
+                                        console.anthropic.com
+                                    </td>
+                                    <td>Module 2</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Google Cloud</strong> — Gemini
+                                        API + GBP OAuth
+                                    </td>
+                                    <td>Modules 2 + 5</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Perplexity</strong> —
+                                        perplexity.ai/api
+                                    </td>
+                                    <td>Module 2</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Mapbox</strong> — mapbox.com
+                                    </td>
+                                    <td>Module 1</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Clerk</strong> — clerk.com</td>
+                                    <td>Platform login + workspaces</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Vercel</strong> — vercel.com
+                                    </td>
+                                    <td>Platform hosting</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Convex</strong> — convex.dev
+                                    </td>
+                                    <td>Platform backend</td>
+                                    <td>
+                                        <span class="when-badge">Week 1</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Stripe</strong> — stripe.com
+                                    </td>
+                                    <td>Billing for your end-customers</td>
+                                    <td>
+                                        <span class="when-badge">Week 2</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>EIN Presswire</strong> —
+                                        einpresswire.com
+                                    </td>
+                                    <td>Module 3 — LLM Citation Builder</td>
+                                    <td>
+                                        <span class="when-badge later"
+                                            >Before Week 7</span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Apollo.io</strong> — apollo.io
+                                    </td>
+                                    <td>Module 6 — Leads Database</td>
+                                    <td>
+                                        <span class="when-badge later"
+                                            >Before Week 8</span
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 5: Phase 1 Limitations ───────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">5</div>
+                    <h2>What Cannot Be Delivered in Phase 1</h2>
+                </div>
+                <div class="card-body">
+                    <div class="gap-box">
+                        <strong>Module 4 — Full directory coverage.</strong>
+                        Your requirements specify 100+ directories. Writing and
+                        testing a reliable automation script for each directory
+                        takes time. In 3 months we will deliver the
+                        <strong>20 highest-authority directories</strong> — the
+                        ones that carry the most weight for local SEO rankings
+                        (Yelp, BBB, Yellow Pages, Foursquare, Bing Places, Apple
+                        Maps, and similar). These 20 cover the vast majority of
+                        the citation value.<br /><br />
+                        Expanding to 100+ is a straightforward post-launch
+                        effort: each new directory is added as its own script
+                        without any architectural changes.
+                    </div>
+                    <div class="gap-ok">
+                        ✓ Everything else from your requirements — the rank
+                        tracker, AI Monitor, LLM Citations, GBP automation, and
+                        leads database — is fully delivered in Phase 1.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 6: Comparison ─────────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">6</div>
+                    <h2>How This Compares to localrank.so</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        You shared localrank.so as the reference product. We
+                        have done a full audit of their platform including a
+                        live authenticated account. Here is the honest
+                        comparison.
+                    </p>
+
+                    <div class="compare-grid">
+                        <div class="compare-col ahead">
+                            <h4>Where Our Platform is Stronger</h4>
+                            <ul>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            AI Monitor scoring (Module 2)
+                                        </div>
+                                        <div class="strength-body">
+                                            We use a four-component weighted
+                                            score (rank 40%, mention 30%, share
+                                            of voice 20%, sentiment 10%). Their
+                                            score is a binary percentage — 2 out
+                                            of 4 models = 50%, regardless of
+                                            whether the mention was glowing or
+                                            negative.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            Live web search on all 4 AI
+                                            providers
+                                        </div>
+                                        <div class="strength-body">
+                                            Their platform queries AI on
+                                            training data from October 2023.
+                                            Ours uses live web search — scores
+                                            reflect the current web, not
+                                            two-year-old data.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            Leads Database: 14× more data
+                                        </div>
+                                        <div class="strength-body">
+                                            Their database has 15 million
+                                            contacts. Ours uses Apollo.io with
+                                            210 million+.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            Real-time scan progress
+                                        </div>
+                                        <div class="strength-body">
+                                            Users watch the map fill in pin by
+                                            pin as each grid point is scanned.
+                                            Their platform shows a spinner until
+                                            it's done.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            Infrastructure reliability
+                                        </div>
+                                        <div class="strength-body">
+                                            Their entire platform runs on a
+                                            single self-managed server. Ours
+                                            runs on managed cloud infrastructure
+                                            with automatic failover and scaling.
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="compare-col behind">
+                            <h4>Where They Are Currently Ahead</h4>
+                            <ul>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            Platform is live today
+                                        </div>
+                                        <div class="strength-body">
+                                            They have paying customers. Ours is
+                                            being built.
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <div class="strength-title">
+                                            550 citation directories
+                                        </div>
+                                        <div class="strength-body">
+                                            Our Phase 1 targets the 20
+                                            highest-authority directories (the
+                                            ones that actually move rankings).
+                                            Expanding to 100+ is Phase 2.
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="callout" style="margin-top: 18px">
+                        <strong>On the citation directory gap:</strong> More
+                        directories does not always mean more value. The top 20
+                        high-authority directories (Yelp, BBB, Yellow Pages,
+                        Foursquare, etc.) account for the vast majority of
+                        citation ranking weight. Their 550 directories include a
+                        long tail of low-authority sites with near-zero SEO
+                        impact. Additionally, their self-built blog network
+                        carries real Google penalty risk that our PR wire
+                        approach does not.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 7: Risk ───────────────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">7</div>
+                    <h2>A Word on Risk</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-intro">
+                        Building software always carries some uncertainty. We
+                        want to be transparent about the main risks and how we
+                        have planned for them.
+                    </p>
+                    <div class="risk-list">
+                        <div class="risk-item">
+                            <div class="risk-icon">⚙</div>
+                            <div>
+                                <div class="risk-title">
+                                    Directory automation (Module 4)
+                                </div>
+                                <div class="risk-body">
+                                    Submitting to directories automatically
+                                    requires a browser that visits each site and
+                                    fills out forms. Phase 1 covers 20
+                                    high-authority directories. Some directories
+                                    occasionally update their website design,
+                                    which can break a script temporarily. Any
+                                    directory that cannot be automated is
+                                    flagged in the dashboard with a link for
+                                    manual submission — no single directory
+                                    blocks the platform from working. Expanding
+                                    beyond 20 is a post-launch effort.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">📡</div>
+                            <div>
+                                <div class="risk-title">
+                                    PR wire account (Module 3)
+                                </div>
+                                <div class="risk-body">
+                                    Module 3 requires you to have an EIN
+                                    Presswire account with API access. This is a
+                                    simple self-service sign-up — not a
+                                    technical blocker. We will remind you before
+                                    we reach that milestone.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-icon">🔗</div>
+                            <div>
+                                <div class="risk-title">
+                                    Apollo.io API (Module 6)
+                                </div>
+                                <div class="risk-body">
+                                    The Leads Database depends on Apollo.io's
+                                    API. We need to confirm the API access tier
+                                    that suits your expected usage volume before
+                                    we build this module.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Section 8: Summary ────────────────────────────────────────── -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="section-num">8</div>
+                    <h2>Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tbl-wrap">
+                        <table class="summary-table">
+                            <tbody>
+                                <tr>
+                                    <td>Contract type</td>
+                                    <td>Hourly on Upwork</td>
+                                </tr>
+                                <tr>
+                                    <td>Rate</td>
+                                    <td>$25/hour</td>
+                                </tr>
+                                <tr>
+                                    <td>Hours per week</td>
+                                    <td>30 hours</td>
+                                </tr>
+                                <tr>
+                                    <td>Timeline</td>
+                                    <td>3 months</td>
+                                </tr>
+                                <tr>
+                                    <td>Modules delivered</td>
+                                    <td>
+                                        All 6 as specified in your requirements
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Requirements coverage</td>
+                                    <td>
+                                        100% of your stated requirements covered
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Key improvement</td>
+                                    <td>
+                                        AI Monitor uses live web search +
+                                        weighted scoring — significantly better
+                                        than the reference product
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Third-party costs</td>
+                                    <td>
+                                        Separate from dev cost — see Section 3
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Phase 1 gap</td>
+                                    <td>
+                                        Module 4 covers 20 high-authority
+                                        directories; 100+ is post-launch — see
+                                        Section 5
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>First step for you</td>
+                                    <td>
+                                        Create API accounts listed in Section 4
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="callout green" style="margin-top: 20px">
+                        We are ready to start as soon as the contract is agreed
+                        on Upwork. The first week will be spent setting up the
+                        project foundation and confirming your API account
+                        access — both of which happen in parallel so there is no
+                        waiting time.
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                Questions? Reply on Upwork and we will respond within 24 hours.
+            </div>
+        </div>
+
+        <script>
+            // On click, open print dialog. Guide user to pick "Save as PDF" as destination.
+            document
+                .querySelector(".pdf-btn")
+                .addEventListener("click", function () {
+                    window.print();
+                });
+        </script>
+    </body>
+</html>
