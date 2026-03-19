@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Project Milestones — Instagram Follower Monitor</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --navy: #1e3a5f;
+                --navy-light: #2d5282;
+                --blue: #2563eb;
+                --blue-light: #dbeafe;
+                --blue-xlight: #eff6ff;
+                --green: #16a34a;
+                --green-light: #dcfce7;
+                --amber: #d97706;
+                --amber-light: #fef3c7;
+                --slate-50: #f8fafc;
+                --slate-100: #f1f5f9;
+                --slate-200: #e2e8f0;
+                --slate-400: #94a3b8;
+                --slate-600: #475569;
+                --slate-800: #1e293b;
+                --text: #0f172a;
+                --radius: 10px;
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+                --shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+                --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            html { font-size: 15px; scroll-behavior: smooth; }
+
+            body {
+                font-family: "Inter", system-ui, sans-serif;
+                background: var(--slate-100);
+                color: var(--text);
+                line-height: 1.7;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ─── PDF Bar ───────────────────────────────────────────────────── */
+            .pdf-bar {
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                z-index: 100;
+                background: var(--navy);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 32px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+            }
+            .pdf-bar-title {
+                color: rgba(255,255,255,0.75);
+                font-size: 0.8rem;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+            .pdf-btn {
+                background: #fff;
+                color: var(--navy);
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-family: inherit;
+                font-size: 0.85rem;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: background 0.15s, box-shadow 0.15s;
+            }
+            .pdf-btn:hover { background: var(--blue-light); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+            .pdf-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+            /* ─── Layout ────────────────────────────────────────────────────── */
+            .page { max-width: 820px; margin: 0 auto; padding: 80px 24px 64px; }
+
+            /* ─── Header ────────────────────────────────────────────────────── */
+            .header {
+                background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+                border-radius: var(--radius);
+                padding: 40px 48px;
+                color: #fff;
+                margin-bottom: 32px;
+                box-shadow: var(--shadow-lg);
+            }
+            .header-label {
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: rgba(255,255,255,0.55);
+                margin-bottom: 10px;
+            }
+            .header h1 { font-size: 1.75rem; font-weight: 700; line-height: 1.25; margin-bottom: 6px; }
+            .header-sub { color: rgba(255,255,255,0.65); font-size: 0.9rem; }
+            .header-meta {
+                display: flex;
+                gap: 32px;
+                margin-top: 28px;
+                padding-top: 24px;
+                border-top: 1px solid rgba(255,255,255,0.15);
+            }
+            .meta-item { display: flex; flex-direction: column; gap: 3px; }
+            .meta-label {
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: rgba(255,255,255,0.45);
+            }
+            .meta-value { font-size: 1rem; font-weight: 600; color: #fff; }
+
+            /* ─── Instruction box ───────────────────────────────────────────── */
+            .instruction-box {
+                background: var(--blue-xlight);
+                border: 1px solid var(--blue-light);
+                border-left: 4px solid var(--blue);
+                border-radius: var(--radius);
+                padding: 18px 22px;
+                margin-bottom: 32px;
+                font-size: 0.88rem;
+                color: var(--slate-800);
+                line-height: 1.65;
+            }
+            .instruction-box strong { color: var(--blue); font-weight: 600; }
+            .instruction-steps { margin-top: 10px; padding-left: 18px; }
+            .instruction-steps li { margin-bottom: 4px; }
+
+            /* ─── Section title ─────────────────────────────────────────────── */
+            .section-title {
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--slate-400);
+                margin-bottom: 14px;
+            }
+
+            /* ─── Milestone card ────────────────────────────────────────────── */
+            .milestone {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                margin-bottom: 20px;
+                overflow: hidden;
+            }
+            .milestone-header {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                padding: 22px 28px;
+                border-bottom: 1px solid var(--slate-100);
+            }
+            .milestone-number {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.85rem;
+                font-weight: 700;
+                flex-shrink: 0;
+            }
+            .m1 .milestone-number { background: #dbeafe; color: #1d4ed8; }
+            .m2 .milestone-number { background: #ede9fe; color: #6d28d9; }
+            .m3 .milestone-number { background: #dcfce7; color: #15803d; }
+
+            .milestone-title-group { flex: 1; min-width: 0; }
+            .milestone-name { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+            .milestone-days { font-size: 0.78rem; color: var(--slate-400); font-weight: 500; margin-top: 2px; }
+            .milestone-amount { text-align: right; flex-shrink: 0; }
+            .amount-value { font-size: 1.35rem; font-weight: 700; color: var(--navy); line-height: 1; }
+            .amount-label { font-size: 0.7rem; color: var(--slate-400); font-weight: 500; margin-top: 3px; }
+
+            .milestone-body { padding: 20px 28px; }
+            .deliverables-label {
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--slate-400);
+                margin-bottom: 10px;
+            }
+            .deliverable-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+            .deliverable-list li {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                font-size: 0.88rem;
+                color: var(--slate-800);
+                line-height: 1.55;
+            }
+            .deliverable-list li::before {
+                content: "";
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                margin-top: 7px;
+                flex-shrink: 0;
+            }
+            .m1 .deliverable-list li::before { background: #3b82f6; }
+            .m2 .deliverable-list li::before { background: #7c3aed; }
+            .m3 .deliverable-list li::before { background: #16a34a; }
+
+            .milestone-acceptance {
+                margin-top: 16px;
+                padding-top: 14px;
+                border-top: 1px solid var(--slate-100);
+                font-size: 0.8rem;
+                color: var(--slate-600);
+                line-height: 1.55;
+            }
+            .milestone-acceptance strong { color: var(--slate-800); font-weight: 600; }
+
+            /* ─── Timeline ──────────────────────────────────────────────────── */
+            .timeline-card {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                padding: 24px 28px;
+                margin-top: 20px;
+            }
+            .timeline-bar {
+                display: flex;
+                height: 36px;
+                border-radius: 6px;
+                overflow: hidden;
+                margin-top: 16px;
+                margin-bottom: 12px;
+            }
+            .tbar-seg {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: 0.03em;
+            }
+            .tbar-1 { background: #3b82f6; flex: 4; }
+            .tbar-2 { background: #7c3aed; flex: 9; }
+            .tbar-3 { background: #16a34a; flex: 4; }
+            .timeline-legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px 24px;
+                margin-top: 8px;
+            }
+            .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; color: var(--slate-600); }
+            .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+            /* ─── Summary table ─────────────────────────────────────────────── */
+            .summary-card {
+                background: #fff;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                overflow: hidden;
+                margin-top: 20px;
+            }
+            .summary-card-header {
+                background: var(--navy);
+                padding: 16px 28px;
+                color: #fff;
+                font-size: 0.8rem;
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+            .summary-table { width: 100%; border-collapse: collapse; }
+            .summary-table td {
+                padding: 13px 28px;
+                font-size: 0.88rem;
+                border-bottom: 1px solid var(--slate-100);
+                color: var(--slate-800);
+            }
+            .summary-table tr:last-child td { border-bottom: none; }
+            .summary-table .col-amount { text-align: right; font-weight: 600; color: var(--navy); }
+            .summary-table .total-row td {
+                background: var(--slate-50);
+                font-weight: 700;
+                font-size: 0.95rem;
+                color: var(--navy);
+                border-top: 2px solid var(--slate-200);
+            }
+            .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-right: 6px; }
+            .badge-m1 { background: #dbeafe; color: #1d4ed8; }
+            .badge-m2 { background: #ede9fe; color: #6d28d9; }
+            .badge-m3 { background: #dcfce7; color: #15803d; }
+
+            /* ─── Footer ────────────────────────────────────────────────────── */
+            .footer {
+                text-align: center;
+                padding: 32px 0 0;
+                font-size: 0.78rem;
+                color: var(--slate-400);
+                line-height: 1.7;
+            }
+
+            @media print {
+                .pdf-bar { display: none; }
+                .page { padding-top: 32px; }
+                body { background: #fff; }
+            }
+            @media (max-width: 600px) {
+                .header { padding: 28px 24px; }
+                .header-meta { flex-wrap: wrap; gap: 18px; }
+                .milestone-header { flex-wrap: wrap; gap: 12px; }
+                .page { padding: 72px 16px 48px; }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="pdf-bar">
+            <span class="pdf-bar-title">Instagram Monitor — Milestone Schedule</span>
+            <button class="pdf-btn" onclick="window.print()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+                </svg>
+                Save as PDF
+            </button>
+        </div>
+
+        <div class="page">
+
+            <!-- Header -->
+            <div class="header">
+                <div class="header-label">Upwork Contract</div>
+                <h1>Project Milestone Schedule</h1>
+                <div class="header-sub">Instagram Follower Monitor — Fixed Price Contract</div>
+                <div class="header-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Total Contract Value</span>
+                        <span class="meta-value">$1,600</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Milestones</span>
+                        <span class="meta-value">3</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Delivery Timeline</span>
+                        <span class="meta-value">1 Month</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Contract Type</span>
+                        <span class="meta-value">Fixed Price</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instruction-box">
+                <strong>How to set up milestones on Upwork:</strong> When creating the contract, select <em>Fixed Price</em> and add the 3 milestones below with the names, amounts, and due dates as listed. Fund each milestone before work on that phase begins — we will submit for your review and approval upon completing each one.
+                <ol class="instruction-steps">
+                    <li>Go to <strong>Contract → Create Milestone</strong> and add all 3 milestones upfront.</li>
+                    <li>Fund <strong>Milestone 1 ($500)</strong> to kick off the project.</li>
+                    <li>Each subsequent milestone will be funded at the start of that phase.</li>
+                    <li>Approve and release payment once you've reviewed the deliverables.</li>
+                </ol>
+            </div>
+
+            <div class="section-title">Milestones</div>
+
+            <!-- M1 -->
+            <div class="milestone m1">
+                <div class="milestone-header">
+                    <div class="milestone-number">1</div>
+                    <div class="milestone-title-group">
+                        <div class="milestone-name">Foundation &amp; Core Sync Engine</div>
+                        <div class="milestone-days">Week 1</div>
+                    </div>
+                    <div class="milestone-amount">
+                        <div class="amount-value">$500</div>
+                        <div class="amount-label">fund at contract start</div>
+                    </div>
+                </div>
+                <div class="milestone-body">
+                    <div class="deliverables-label">Deliverables</div>
+                    <ul class="deliverable-list">
+                        <li>Full project scaffolding — all services (database, background jobs, email, payments) connected and running</li>
+                        <li>Complete database schema with all tables, indexes, and security policies (each user can only access their own data)</li>
+                        <li>Instagram data API integrated and verified — follower/following data fetching confirmed with real test calls, edge cases handled (private accounts, large accounts, pagination)</li>
+                        <li>Core sync engine working end-to-end — data is fetched, compared against the previous snapshot, changes detected and stored, and the UI notified in real time</li>
+                    </ul>
+                    <div class="milestone-acceptance">
+                        <strong>Acceptance:</strong> We will share a short screen recording showing a sync running against a real Instagram account and follower changes appearing live on screen. You review and approve based on the recording.
+                    </div>
+                </div>
+            </div>
+
+            <!-- M2 -->
+            <div class="milestone m2">
+                <div class="milestone-header">
+                    <div class="milestone-number">2</div>
+                    <div class="milestone-title-group">
+                        <div class="milestone-name">All Features Complete</div>
+                        <div class="milestone-days">Weeks 2–3</div>
+                    </div>
+                    <div class="milestone-amount">
+                        <div class="amount-value">$800</div>
+                        <div class="amount-label">fund at start of phase</div>
+                    </div>
+                </div>
+                <div class="milestone-body">
+                    <div class="deliverables-label">Deliverables</div>
+                    <ul class="deliverable-list">
+                        <li>Target management — add and remove Instagram accounts to monitor, with live status indicators (active, syncing, cooldown, paused, private) and automatic cooldown enforcement between syncs</li>
+                        <li>Subscription management — plan upgrades, downgrades, and cancellations handled automatically; access gated correctly per plan; excess targets auto-paused on downgrade</li>
+                        <li>Dashboard — activity feed showing all follow/unfollow events, target list with live status, plan usage display, and real-time sync progress indicator</li>
+                        <li>Anonymous story viewer — Instagram stories viewable through the app without sending a view receipt to the account owner</li>
+                        <li>Weekly email digest — automated summary of the week's follower activity delivered to each user</li>
+                    </ul>
+                    <div class="milestone-acceptance">
+                        <strong>Acceptance:</strong> We will share a staging link where you can log in, add an Instagram account to monitor, trigger a sync, and see follower changes appear in the activity feed. You can also view a story anonymously and receive a test email digest. Review and approve once you're satisfied everything works as described.
+                    </div>
+                </div>
+            </div>
+
+            <!-- M3 -->
+            <div class="milestone m3">
+                <div class="milestone-header">
+                    <div class="milestone-number">3</div>
+                    <div class="milestone-title-group">
+                        <div class="milestone-name">QA, Branding &amp; Production Launch</div>
+                        <div class="milestone-days">Week 4</div>
+                    </div>
+                    <div class="milestone-amount">
+                        <div class="amount-value">$300</div>
+                        <div class="amount-label">fund at start of phase</div>
+                    </div>
+                </div>
+                <div class="milestone-body">
+                    <div class="deliverables-label">Deliverables</div>
+                    <ul class="deliverable-list">
+                        <li>Full QA pass across all critical scenarios — sync correctness, concurrent sync handling, cooldown enforcement, plan limit gating, payment event handling, and edge cases</li>
+                        <li>Your branding applied — logo, colors, and typography integrated across the application</li>
+                        <li>Production deployment — application live on your domain, all payment webhooks connected to live mode, production database provisioned</li>
+                    </ul>
+                    <div class="milestone-acceptance">
+                        <strong>Acceptance:</strong> The application is live on your domain with your branding applied. Open the link, complete a full journey — add a target, trigger a sync, see follower changes, view a story — and confirm everything looks and works as expected before releasing final payment.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-card">
+                <div class="section-title" style="margin-bottom:0;">Delivery Timeline</div>
+                <div class="timeline-bar">
+                    <div class="tbar-seg tbar-1">Week 1</div>
+                    <div class="tbar-seg tbar-2">Weeks 2–3</div>
+                    <div class="tbar-seg tbar-3">Week 4</div>
+                </div>
+                <div class="timeline-legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div>M1 — Foundation &amp; Core Sync Engine ($500)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div>M2 — All Features Complete ($800)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div>M3 — QA, Branding &amp; Launch ($300)</div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-card">
+                <div class="summary-card-header">Payment Summary</div>
+                <table class="summary-table">
+                    <tr>
+                        <td><span class="badge badge-m1">M1</span> Foundation &amp; Core Sync Engine — Week 1</td>
+                        <td class="col-amount">$500</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-m2">M2</span> All Features Complete — Weeks 2–3</td>
+                        <td class="col-amount">$800</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-m3">M3</span> QA, Branding &amp; Production Launch — Week 4</td>
+                        <td class="col-amount">$300</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Contract Value</td>
+                        <td class="col-amount">$1,600</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="footer">
+                Payment is released only after you review and approve each milestone's deliverables.<br>
+                Each milestone builds directly on the last — no rework, no surprises.
+            </div>
+
+        </div>
+
+    </body>
+</html>
