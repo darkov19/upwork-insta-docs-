@@ -132,21 +132,34 @@ app.domain.com/plans  (plan selection — we build this)
 Stripe Checkout  (payment — Stripe hosted, we never touch card data)
     ↓  payment confirmed
 Stripe calls our /api/webhook with signed notification
-    ↓  we verify the signature and create a pending_registrations record
-       { email, plan_id, expires_at: now + 24 hours }
-app.domain.com/register?email=...  (registration — email pre-filled)
+    ↓  we verify the signature and:
+       1. create a pending_registrations record:
+          { email, plan_id, token: randomUUID(), expires_at: now + 7 days }
+       2. send a registration email via Resend:
+          Subject: "Complete your account setup"
+          Link:    app.domain.com/register?token=<uuid>
+Customer receives email and clicks the link
+    ↓
+app.domain.com/register?token=<uuid>  (email pre-filled read-only)
     ↓  user sets a password
-       we check: does a valid, unexpired pending_registrations record exist for this email?
-       yes → create account, create subscription, mark pending as used
-       no / expired → reject with clear message
+       we check: does a valid pending_registrations record exist for this token?
+       valid (exists, not expired, not used) → create account, create subscription, set used_at = now()
+       not found                             → reject
+       already used                          → reject (account already exists — direct to /login)
+       expired, not yet used                 → show "Link expired" + resend option (no new charge)
 app.domain.com/dashboard
 ```
 
-The 24-hour expiry is stored in the `pending_registrations` table. The duration is configurable — just a value in the database.
+**Webhook timing:** Stripe fires the webhook and redirects the customer at roughly the same time. If the customer clicks the emailed link before the webhook has written the DB row, the register page shows "Confirming your payment…" and polls for up to 10 seconds before surfacing an error. In practice the webhook arrives within 1–2 seconds, so this is rarely visible.
 
-**Service:** Next.js pages + Stripe + Supabase Auth + Supabase PostgreSQL
+**Recovery path (customer didn't register in time or lost the email):**
+The registration link remains valid for 7 days. If it expires, the `/register?token=...` page shows an email input and a "Resend registration link" button. Submitting the email re-issues a new token and sends a new email — no new payment required. The original `pending_registrations` record (with `used_at = null`) is proof that payment was received.
 
-**Deviation:** None. This matches the requirement exactly.
+The 7-day expiry is stored in the `pending_registrations` table as `expires_at`. The duration is configurable — just a value in the database.
+
+**Service:** Next.js pages + Stripe + Supabase Auth + Supabase PostgreSQL + Resend
+
+**Deviation:** Minor extension of the original requirement. The requirement specified expiry after a configurable duration — we honour that. We added a registration email (necessary for the customer to return after abandoning) and a token-based URL (necessary to make the link unguessable and re-issuable). The expiry window is extended from 24 hours to 7 days to avoid locking out legitimate paying customers who take a few days to set up their account.
 
 ---
 
@@ -377,12 +390,22 @@ Events reference their `sync_run_id`. If the same sync function executes twice (
 ### Secure authentication
 Supabase Auth handles all authentication. Passwords are hashed and never stored in plain text. Session tokens are short-lived JWTs. Row Level Security in the database enforces that authenticated users can only access their own data.
 
+All server-side auth checks use `supabase.auth.getUser()`, not `getSession()`. `getSession()` trusts the cookie without revalidating — an attacker can forge a cookie payload and bypass auth. `getUser()` makes a live network call to verify the token.
+
+RLS must be explicitly enabled per table in Supabase (off by default). RLS policies use only `auth.uid()` — never `auth.jwt() -> 'user_metadata'`, which is writable by the authenticated user. The Supabase Admin client (service role key) is used only in server-only files and never bundled into the client.
+
 ### Webhook validation for billing
-The Stripe webhook endpoint (`/api/webhook`) verifies every incoming request using Stripe's signing secret via `stripe.webhooks.constructEvent()`. Any request that cannot be verified is rejected immediately — preventing fake payment confirmations.
+The Stripe webhook endpoint (`/api/webhook`) verifies every incoming request using Stripe's signing secret via `stripe.webhooks.constructEvent()` against the **raw request body** (not the parsed JSON — Next.js App Router must not parse the body before signature verification, or the bytes will differ and verification always fails).
+
+The handler returns HTTP 200 immediately after DB insert and sends the registration email asynchronously. This prevents Stripe from treating a slow Resend API call as a timeout, marking the webhook failed, and retrying — which would trigger duplicate processing.
+
+DB-level idempotency is enforced via a `UNIQUE` constraint on `stripe_event_id` with `INSERT ... ON CONFLICT DO NOTHING`. Stripe explicitly documents that the same event can be delivered more than once, and Vercel's serverless model means two concurrent invocations can both pass an application-level check before either one commits to the database.
+
+The handler also processes `charge.refunded` and `charge.dispute.created` events to suspend user access, preventing a refunded or disputed customer from continuing to use the product.
 
 **Service:** Vercel environment variables + Inngest + Supabase Auth + Supabase RLS + Stripe SDK
 
-**Deviation:** None.
+**Deviation:** None — strengthened with production-hardening details not in the original requirement.
 
 ---
 
@@ -413,7 +436,10 @@ The `email_log` insert at the end means that if the cron fires twice in the same
 
 | Acceptance Criterion | How It Is Met |
 |---|---|
-| Paid user can register after payment | Stripe webhook creates `pending_registrations` record; registration page validates it before creating account |
+| Paid user can register after payment | Stripe webhook creates `pending_registrations` record + sends registration email with token link; registration page validates token before creating account |
+| Paid user who abandoned registration can recover | Token link in email valid for 7 days; expired link shows resend option — no new charge required |
+| Refunded or disputed customer loses access | `charge.refunded` and `charge.dispute.created` webhook events suspend subscription; access revoked at middleware |
+| Duplicate webhook delivery does not create duplicate accounts | `UNIQUE (stripe_event_id)` + `ON CONFLICT DO NOTHING` — DB-level idempotency |
 | User can add valid public target within plan limits | HikerAPI validates on add: public check, follower count check, max targets check |
 | Manual sync produces correct follower/following diff events | Inngest sync function: fetch → diff → insert FOLLOWER_ADDED/REMOVED, FOLLOWING_ADDED/REMOVED events |
 | User can clearly view who followed and unfollowed after sync | Activity feed in dashboard reads from `events` table, shows username and profile link per event |

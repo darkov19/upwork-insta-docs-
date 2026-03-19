@@ -117,25 +117,29 @@ subscriptions (
   id                  uuid PRIMARY KEY,
   user_id             uuid REFERENCES users,
   plan_id             int REFERENCES plans,
+  stripe_customer_id  text,            -- required for refunds, disputes, customer portal
   stripe_sub_id       text,
-  status              text,            -- active | canceled | past_due
+  stripe_payment_intent_id text,       -- for reconciling refunds and chargebacks
+  status              text,            -- active | canceled | past_due | disputed | suspended
   current_period_end  timestamptz,
   created_at          timestamptz
 )
 ```
 
 ### `pending_registrations`
-Created on Stripe payment success. Expires after 24h.
+Created on Stripe payment success. A registration email is sent immediately with a unique token link. Expires after 7 days.
 
 ```sql
 pending_registrations (
-  id          uuid PRIMARY KEY,
-  email       text UNIQUE,
-  plan_id     int REFERENCES plans,
-  stripe_session_id text,
-  expires_at  timestamptz,
-  used        boolean DEFAULT false,
-  created_at  timestamptz
+  id                  uuid PRIMARY KEY,
+  email               text UNIQUE,
+  plan_id             int REFERENCES plans,
+  stripe_session_id   text UNIQUE,     -- used for idempotency: ON CONFLICT DO NOTHING
+  stripe_event_id     text UNIQUE,     -- Stripe event ID; prevents duplicate webhook processing
+  token               text UNIQUE,     -- random UUID used in registration link (/register?token=...)
+  expires_at          timestamptz,     -- now + 7 days; configurable
+  used_at             timestamptz,     -- null until registration is completed
+  created_at          timestamptz
 )
 ```
 
@@ -258,7 +262,8 @@ email_log (
 
 | Method | Route | Description |
 |---|---|---|
-| POST | `/api/webhook` | Stripe webhook (payment confirmed → create pending_registration) |
+| POST | `/api/webhook` | Stripe webhook — handles: `checkout.session.completed`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed` |
+| POST | `/api/resend-registration` | Re-issue registration token for a paid user whose link expired or was lost |
 | POST | `/api/sync` | Validate request, create sync_run, call `inngest.send()`, return 202 |
 | GET | `/api/stories/[targetId]` | Proxy story media from HikerAPI with TTL Cache-Control headers |
 | POST | `/api/inngest` | Inngest handler — receives and executes all queued job events |
@@ -285,15 +290,66 @@ This eliminates the need for a custom authorization layer.
 
 ```
 1. User selects plan → Stripe Checkout (email required)
-2. Stripe calls POST /api/webhook (payment_intent.succeeded)
-3. Webhook creates pending_registrations row (expires_at = now + 24h)
-4. Redirect to /register?email=...
-5. User sets password → Supabase Auth creates user
-6. Registration handler checks pending_registrations for email:
-   - Not found or expired → reject
-   - Found → create subscription row, mark pending as used
+
+2. Stripe calls POST /api/webhook (checkout.session.completed)
+   - Verify signature via stripe.webhooks.constructEvent() using raw body (not parsed JSON)
+   - Check session.payment_status === 'paid' before proceeding
+     (bank transfer / async methods can fire this event before money is captured)
+   - INSERT INTO pending_registrations ... ON CONFLICT (stripe_event_id) DO NOTHING
+     (DB-level idempotency — handles Stripe duplicate delivery and concurrent webhook invocations)
+   - Store stripe_customer_id and stripe_payment_intent_id from the session payload
+   - Return HTTP 200 immediately
+   - Send registration email asynchronously after response (use Next.js after() or background job)
+     so Resend latency never causes Stripe to mark the webhook as failed and retry
+
+3. Registration email (sent by Resend):
+     Subject: "Complete your account setup"
+     Link:    app.domain.com/register?token=<uuid>
+     Tracking: disabled (trackClicks: false, trackOpens: false) — avoids link rewrites that
+               could break delivery on corporate proxies
+
+4. User clicks link → /register?token=abc123 (email pre-filled, read-only)
+   - If the page loads before the webhook has written the DB row (race condition: Stripe
+     redirects customer at the same time as firing the webhook), show "Confirming your
+     payment…" and poll for up to 10 seconds before surfacing an error.
+   - Do NOT consume the token on GET — only on form POST (prevents email security scanners
+     from consuming the token by pre-fetching URLs)
+
+5. User sets password → Supabase Auth signUp()
+
+6. Registration handler (single database transaction):
+     - Check pending_registrations for token:
+         Not found               → reject
+         used_at IS NOT NULL     → reject ("Account already exists — log in instead")
+         expired, not used       → show "Link expired" + Resend option (see Recovery below)
+         valid                   → continue
+     - supabase.auth.signUp({ email, password })
+     - INSERT INTO subscriptions (user_id, plan_id, stripe_customer_id, ...)
+     - UPDATE pending_registrations SET used_at = now() WHERE token = ?
+     All three steps in one transaction — token is atomically invalidated
+
 7. User lands on /dashboard
+
+Recovery — customer abandoned registration or link expired:
+  /register?token=expired-uuid shows:
+    "This link has expired. Enter your email to receive a new one."
+  User submits email:
+    - Find pending_registrations WHERE email = ? AND used_at IS NULL
+    - If found → re-issue token, update expires_at, send new registration email
+    - If not found → show generic "Contact support" message (do not confirm/deny whether
+      the email exists — prevents email enumeration)
+    No new charge required — payment is already verified in the existing record.
 ```
+
+### Stripe Webhook Events Handled
+
+| Event | Handler Action |
+|---|---|
+| `checkout.session.completed` | Create `pending_registrations` row + send registration email |
+| `charge.refunded` | Suspend subscription (`status = 'suspended'`), revoke dashboard access |
+| `charge.dispute.created` | Suspend subscription (`status = 'disputed'`), revoke dashboard access |
+| `charge.dispute.closed` (won) | Restore subscription to `active` |
+| `charge.dispute.closed` (lost) | Keep suspended, log for manual review |
 
 ---
 
@@ -500,9 +556,38 @@ With Inngest in the stack, auto sync at 1000 users works cleanly:
 
 ## Security Considerations
 
+### Auth
+- **Use `getUser()` not `getSession()` in all server-side code and middleware.** `getSession()` reads the JWT from the cookie without revalidating with Supabase Auth — an attacker can forge a cookie and bypass authentication.
+- Supabase RLS must be explicitly enabled per table in the Supabase dashboard (it is off by default). Verify every table in the public schema has RLS enabled.
+- RLS policies must use only `auth.uid()` as the identity anchor — never `auth.jwt() -> 'user_metadata'`, which is writable by authenticated users and can be spoofed.
+- Supabase Admin client (service role key): server-only files exclusively. Never import in any component that runs in the browser — it bypasses all RLS.
+- All `/dashboard/*` responses must include `Cache-Control: private, no-store`. Vercel's edge network can otherwise cache an authenticated response and serve it to a different user.
+- Next.js middleware must define a `matcher` to exclude `_next/static`, `_next/image`, and other static paths — prevents unnecessary Supabase network calls on every asset request.
+
+### Stripe Webhook
+- Signature verified via `stripe.webhooks.constructEvent()` using the **raw request body** — not the parsed JSON. Read `req.arrayBuffer()` or `req.text()` directly; do not let Next.js parse the body first.
+- Use separate `STRIPE_WEBHOOK_SECRET_LIVE` and `STRIPE_WEBHOOK_SECRET_TEST` env vars. Vercel endpoint URL must not have a trailing slash — Stripe does not follow 308 redirects.
+- DB-level idempotency via `UNIQUE` constraint on `stripe_event_id` + `INSERT ... ON CONFLICT DO NOTHING`. Application-level checks are raceable; DB constraints are not.
+- Registration email sent **after** returning HTTP 200 (asynchronously). Inline email send risks exceeding Stripe's 20-second response window, causing retries and duplicate processing.
+- Check `session.payment_status === 'paid'` before provisioning. Async payment methods (SEPA, bank transfer) fire `checkout.session.completed` before money is captured.
+- Handle `charge.refunded` and `charge.dispute.created` to suspend access; restore on `charge.dispute.closed` (won).
+
+### Registration
+- Registration token is a random UUID — unguessable, single-use, expiry enforced at DB level.
+- Token consumed only on form POST, never on GET. Email security scanners pre-fetch URLs in emails; consuming on GET invalidates the token before the user clicks.
+- Token invalidation is atomic: `signUp()`, subscription insert, and `used_at = now()` in a single database transaction.
+- Rate-limit `/register` and `/api/resend-registration` endpoints (5–10 attempts per IP per hour).
+- Do not surface raw Supabase error messages — they can confirm whether an email is registered (user enumeration). Return generic error messages.
+
+### Email
+- DMARC DNS record required in addition to SPF and DKIM (mandatory for Google/Yahoo/Microsoft since 2024). Start with `p=none`, graduate to `p=quarantine`.
+- Subscribe to Resend webhooks (`email.bounced`, `email.complained`). Bounced registration email = paid customer locked out; alert immediately.
+- Disable click and open tracking on registration emails (`trackClicks: false`, `trackOpens: false`). Tracking rewrites links through Resend's domain — if blocked by a corporate proxy, the registration link breaks.
+- Use a dedicated sending subdomain (e.g. `mail.yourdomain.com`) to isolate deliverability reputation.
+
+### General
 - HikerAPI key: server-side only (Inngest functions + Next.js API routes), never in client bundle
-- Stripe webhook: verified via `stripe.webhooks.constructEvent()` with signing secret
 - Inngest webhook (`/api/inngest`): verified via Inngest signing key — rejects any requests not from Inngest
-- Supabase RLS: all tables with `user_id` are isolated per authenticated user — enforced at DB level
 - Concurrent sync guard: `FOR UPDATE SKIP LOCKED` prevents race condition when two requests target the same row simultaneously
 - Story media proxy: authenticated endpoint — no public media URLs exposed to client
+- Set a `Content-Security-Policy` header via `next.config.js` to prevent XSS from exfiltrating session cookies

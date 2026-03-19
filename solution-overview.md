@@ -106,6 +106,7 @@ app.domain.com  (our Next.js app on Vercel)
 - Subscription management (plan upgrades, cancellations)
 
 ### Resend
+- **Registration email** — sent immediately on payment; contains the unique token link to complete account setup
 - Weekly summary emails (conditional on activity)
 - Transactional emails (receipts, plan change notifications)
 
@@ -127,8 +128,10 @@ Plan Selection Page  ← we build this, styled to match client branding
     ▼
 Stripe Checkout (email required)
     │  Payment confirmed → Stripe webhook → create pending_registration record
+    │                                     → send registration email via Resend (token link, 7-day expiry)
     ▼
-Registration Page (email pre-filled, 24hr expiry)  ← we build this
+Registration Page (/register?token=uuid, email pre-filled read-only)  ← we build this
+    │  Token expired? → show "Resend link" option (no new charge)
     │
     ▼
 Login Page  ← we build this
@@ -264,5 +267,13 @@ This buffer covers:
 | Edge Function timeout on large accounts | Plan-based follower cap bounds max job duration within 150s for all tiers up to 1M followers |
 | Auto sync at scale | Inngest is already in the stack — auto sync is a feature toggle, not an architectural change. Cost must be reflected in subscription pricing. |
 | Instagram account goes private mid-monitoring | Auto-pause detected on next sync with clear status message |
-| Stripe webhook missed | Idempotent webhook handler + 24h pending_registration expiry |
+| Stripe webhook duplicate delivery | DB-level idempotency: UNIQUE(stripe_event_id) + INSERT ON CONFLICT DO NOTHING — application-level checks are raceable on serverless |
+| Stripe webhook timeout causing retries | Return HTTP 200 immediately after DB insert; send registration email asynchronously (not inline) |
+| Customer abandons registration or loses email | Registration email sent on payment with 7-day token link; expired link shows "Resend" option — no new charge |
+| Webhook arrives after customer clicks register link | Register page polls for token record for up to 10 seconds ("Confirming payment…") before surfacing an error |
+| Refund or chargeback — access not revoked | Handle charge.refunded and charge.dispute.created events; suspend subscription and revoke dashboard access |
+| Registration email lands in spam or bounces | Resend bounce webhooks alert on delivery failure; DMARC + dedicated sending subdomain; post-checkout notice to "check your email" |
+| Supabase getSession() auth bypass | All server/middleware code uses getUser() — makes live token verification call, cannot be bypassed with forged cookie |
+| Service role key bundled into client | Admin Supabase client imported only in server-only files; never in components or client modules |
+| Authenticated page cached by Vercel CDN | All /dashboard/* responses include Cache-Control: private, no-store |
 | followers_state write load at scale | Diff-only writes (200 ops per sync) vs delete-all+insert-all (40k ops per sync) |

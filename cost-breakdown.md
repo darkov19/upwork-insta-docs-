@@ -123,32 +123,33 @@ Skipping this causes surprises mid-implementation. 2 hours before writing the sy
 
 ## Upwork Fee Impact
 
-Upwork charges the freelancer a service fee on earnings from each client:
+> **Updated for 2025 fee structure.** As of May 1, 2025, Upwork replaced the old tiered 20%/10%/5% system with a **variable flat rate of 0–15%** per contract. The rate is determined by Upwork based on skill demand, market saturation, and project complexity — it is shown to you before submitting a proposal and remains fixed for the duration of that contract.
+>
+> The old tiered calculation in this document is no longer applicable.
 
-| Earnings with this client (lifetime) | Upwork fee | You keep   |
-| ------------------------------------ | ---------- | ---------- |
-| First $500                           | 20%        | 80% ($400) |
-| $500.01 – $10,000                    | 10%        | 90%        |
-| Above $10,000                        | 5%         | 95%        |
+### New Fee Structure (Effective May 1, 2025)
 
-For a new client relationship, the 20%/10% split applies.
+| Fee range | Who gets it                                   |
+| --------- | --------------------------------------------- |
+| 0%        | High-demand / undersupplied skill categories  |
+| ~10–13%   | Typical rate for most development contracts   |
+| 15%       | Oversaturated categories                      |
 
-### What different quote amounts net you (new client)
+The exact rate for this contract was visible at proposal submission time. If the rate was not recorded, use the 10–13% range for planning.
 
-| Client pays | You receive (after Upwork) | After Claude ($100) | Dev hours covered | Verdict (58h in-scope)                        |
-| ----------- | -------------------------- | ------------------- | ----------------- | --------------------------------------------- |
-| $1,500      | $1,300                     | $1,200              | 48h               | 10h short — absorb ~$250                      |
-| **$1,600**  | **$1,390**                 | **$1,290**          | **51.6h**         | **6.4h short — absorb ~$160. Recommended.**   |
-| $1,750      | $1,525                     | $1,425              | 57h               | Break-even on 58h in-scope                    |
-| $2,000      | $1,750                     | $1,650              | 66h               | 8h revision buffer                            |
+### Actual deductions for this contract
 
-### To net $1,550 (break-even) after Upwork fees
+| Deduction                  | Rate  | Amount on $1,600 |
+| -------------------------- | ----- | ---------------- |
+| Upwork service fee         | 10.0% | $160.00          |
+| Indian TDS (tax deducted)  | 0.5%  | $8.00            |
+| **Total deducted**         | **10.5%** | **$168.00**  |
+| **You receive**            |       | **$1,432.00**    |
+
+### To net $1,550 (break-even) after all deductions
 
 ```
-First $500 billed → you keep $400
-Remaining $1,150 needed ÷ 0.90 = $1,278 to bill
-─────────────────────────────────────────────────
-Minimum quote to break even: $500 + $1,278 = $1,778 → round to $1,750
+Required net ÷ (1 − 0.105) = $1,550 ÷ 0.895 = $1,732 → quote $1,750
 ```
 
 ---
@@ -198,20 +199,20 @@ These are the client's own SaaS accounts. Make this explicit in the Upwork propo
 
 ## Quote Decision — $1,600 Fixed Price
 
-|                               |                  |
+| Item                          | Amount           |
 | ----------------------------- | ---------------- |
-| Quote                         | $1,600           |
-| Upwork fee (first $500 @ 20%) | -$100            |
-| Upwork fee (remainder @ 10%)  | -$110            |
-| You receive                   | $1,390           |
-| Claude API                    | -$100            |
-| **Net in your pocket**        | **$1,290**       |
-| At $25/hr: hours covered      | 51.6h            |
+| Quote                         | $1,600.00        |
+| Upwork service fee (10%)      | -$160.00         |
+| Indian TDS (0.5%)             | -$8.00           |
+| **You receive**               | **$1,432.00**    |
+| Claude API                    | -$100.00         |
+| **Net in your pocket**        | **$1,332.00**    |
+| At $25/hr: hours covered      | 53.3h            |
 | In-scope hours                | 58h              |
-| **Hours absorbed**            | **6.4h (~$160)** |
-| Effective hourly rate         | $22.24/hr        |
+| **Hours absorbed**            | **4.7h (~$118)** |
+| Effective hourly rate         | $22.96/hr        |
 
-The gap is ~6 hours — less than one day on a multi-week project. Scope is well-defined and client prerequisites (auth, payment) are already handled, reducing integration risk. Accepted.
+The gap is ~4.7 hours — less than one day. Scope is well-defined and client prerequisites (auth, payment) are already handled. Accepted.
 
 ---
 
