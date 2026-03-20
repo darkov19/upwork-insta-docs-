@@ -52,7 +52,7 @@ The core value of the system is enabling users to clearly see the usernames and 
 ### Important Notes
 
 - Payment must be associated with email.
-- If user abandons registration after payment, the payment session must expire after a configurable duration (e.g., 24 hours).
+- If user abandons registration after payment, the registration token expires after a configurable duration (default: **7 days**). Expired links show a "Resend registration link" option — no new charge required.
 
 ---
 
@@ -60,11 +60,13 @@ The core value of the system is enabling users to clearly see the usernames and 
 
 Each plan defines:
 
-- `maxTargets`
-- `maxFollowerCountAllowed`
-- `storyViewerEnabled`
-- `dailySyncLimitPerUser`
-- `cooldownMinutesBetweenSyncs`
+- `max_targets`
+- `max_follower_count`
+- `story_viewer_enabled`
+- `daily_sync_limit`
+- `cooldown_minutes`
+- `page_cap` — max pages fetched per sync (controls HikerAPI cost and job duration)
+- `max_units_per_sync` — hard request unit ceiling per sync (secondary cost safeguard)
 
 ### Enforcement Rules
 
@@ -77,9 +79,9 @@ Each plan defines:
 
 ## 5. Sync Model
 
-### Manual Sync Only
+### Manual Sync Only (MVP)
 
-There is **NO automatic background syncing**.
+There is **NO automatic background syncing** at MVP. Auto sync is architecturally ready via Inngest (fan-out scheduler already in the design) but is deferred until it can be priced into subscription plans — at 1,000 users with a 4-hour interval it costs ~$52/month in Inngest alone.
 
 ### Constraints
 
@@ -138,15 +140,15 @@ Uses snapshot-diff model.
 
 ### 6.4 Story Viewer
 
-Available only if plan allows.
+Available only if plan allows (`story_viewer_enabled = true`).
 
 #### Capabilities
 
-- Fetch current public stories.
+- Fetch current public stories via HikerAPI (server-side only).
 - Render media inside the app.
-- Do not store media permanently.
-- Media must be proxied through backend.
-- No long-term caching.
+- Do not store media permanently — media passes through the proxy and is never written to database or storage.
+- Media must be proxied through the backend (`/api/stories`). The browser never contacts Instagram directly.
+- **Dynamic TTL edge caching:** Vercel edge cache stores the response with a `Cache-Control` header set to the story's remaining lifetime (calculated from `taken_at + 24h - now`). Multiple users viewing the same target share the cached response — HikerAPI is only called once per story per its remaining lifetime. Cache is ephemeral (evicts on TTL expiry or memory pressure).
 
 ---
 
@@ -179,10 +181,10 @@ System must track:
 
 ### Safeguards
 
-- Hard page cap per sync (configurable).
-- Daily sync cap.
-- Cooldown enforcement.
-- Stop sync if request unit usage exceeds threshold.
+- **Hard page cap per sync** (`plan.page_cap`): sync stops after this many HikerAPI pages regardless of remaining data; sync marked `completed_partial` if truncated.
+- **Mid-sync unit budget** (`plan.max_units_per_sync`): cumulative request units are tracked per page fetch; sync stops early if units exceed the threshold before the page cap is reached.
+- Daily sync cap (`plan.daily_sync_limit`).
+- Cooldown enforcement (`plan.cooldown_minutes`).
 
 ### Metrics Tracked
 
@@ -194,17 +196,18 @@ System must track:
 
 ## 8. Data Model (High-Level)
 
-- Users
-- Subscriptions
-- Plans
-- Targets
-- FollowersState
-- FollowingState
-- Events (90-day retention)
-- DailyStats (permanent)
-- SyncRuns
-- EmailLog
-- RequestUnitUsage
+- Users (Supabase Auth managed)
+- Plans (seeded, not user-editable)
+- Subscriptions (one active subscription per user)
+- PendingRegistrations (created on Stripe payment; holds token for email-gated registration; expires after 7 days)
+- Targets (monitored Instagram accounts)
+- FollowersState (current known follower set per target — diff baseline)
+- FollowingState (current known following set per target — diff baseline)
+- Events (immutable change log — 90-day retention)
+- DailyStats (aggregated daily counts — permanent)
+- SyncRuns (one record per sync attempt)
+- EmailLog (weekly email idempotency — prevents duplicate sends)
+- RequestUnitUsage (HikerAPI cost tracking per sync)
 
 ---
 
@@ -212,11 +215,19 @@ System must track:
 
 ### Target Statuses
 
-- Active
-- Paused – Private
-- Paused – Out of Plan
-- Paused – Error
-- Syncing
+- `active`
+- `syncing`
+- `paused_private` — account became private (detected during sync)
+- `paused_out_of_plan` — follower count now exceeds plan limit (detected during sync)
+- `paused_error` — non-transient HikerAPI error after retries exhausted
+
+### Sync Run Statuses
+
+- `queued` — created, waiting for Inngest to pick up
+- `running` — Inngest executing
+- `completed` — successful full sync
+- `completed_partial` — sync stopped early (page cap or unit budget hit)
+- `failed` — all retries exhausted
 
 ### Retry Logic
 
@@ -269,11 +280,35 @@ System must track:
 
 ## 13. Open Questions (Client Confirmation Required)
 
-1. Exact follower count thresholds per tier?
-2. Exact cooldown duration?
-3. Daily sync limits per tier?
-4. Page cap per sync?
-5. Timezone handling for weekly emails?
+### Plan Configuration (blocks sync engine build)
+1. Exact follower count threshold per plan tier?
+2. Exact cooldown duration per plan tier?
+3. Daily sync limit per plan tier?
+4. Page cap per plan tier?
+5. Max request units per sync per plan tier?
+
+### Email
+6. Timezone for weekly emails? (currently UTC — flag if user-local timezone required)
+
+### Go-Live Accounts (client must create)
+7. HikerAPI account — client creates; needed before Phase 2 sync engine testing
+8. Stripe account with products and prices configured — needed before Phase 3 webhook testing
+9. Resend account with verified sending domain — needed before Phase 3 email testing
+10. `app.domain.com` subdomain DNS → Vercel — needed before go-live
+
+### Branding
+11. Logo, brand colours, and fonts for client-facing pages?
+
+## 14. Development Approach
+
+Development uses **BMAD v6** (AI-assisted development) in four phases:
+
+1. **Phase 1 — Foundation:** Project scaffold, full DB schema + RLS, seed data, auth stub middleware, all services wired locally
+2. **Phase 2 — Core Engine:** Target management, async sync engine, plan enforcement, HikerAPI integration
+3. **Phase 3 — Dashboard + Features:** Dashboard UI, story viewer, weekly email, Stripe webhooks, client branding, production deployment
+4. **Phase 4 — Auth ($275–$300 separate milestone):** Login page, registration flow, Stripe webhook → pending_registrations, forgot password
+
+**Auth stub:** Phases 1–3 run against a `DEV_USER_ID` injected by a stub middleware. All app code calls `getUser()` as normal. Swapping in real Supabase Auth (Phase 4) changes one file only — no app-level code changes required.
 
 ---
 

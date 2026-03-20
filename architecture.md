@@ -101,10 +101,12 @@ plans (
   id                        serial PRIMARY KEY,
   name                      text,
   max_targets               int,
-  max_follower_count        int,        -- hard cap when adding target
+  max_follower_count        int,        -- hard cap when adding target; reject accounts above this
   story_viewer_enabled      boolean,
-  daily_sync_limit          int,        -- per user, across all targets
-  cooldown_minutes          int,        -- between syncs of same target
+  daily_sync_limit          int,        -- per user, across all targets, per calendar day
+  cooldown_minutes          int,        -- minimum time between syncs of same target
+  page_cap                  int,        -- max HikerAPI pages per sync; sync marked completed_partial if truncated
+  max_units_per_sync        int,        -- hard request unit ceiling per sync (secondary cost safeguard)
   price_stripe_id           text        -- Stripe price ID
 )
 ```
@@ -207,7 +209,7 @@ sync_runs (
   id              uuid PRIMARY KEY,
   target_id       uuid REFERENCES targets,
   user_id         uuid REFERENCES users,
-  status          text,        -- running | completed | failed
+  status          text,        -- queued | running | completed | completed_partial | failed
   request_units   int,
   started_at      timestamptz,
   completed_at    timestamptz,
