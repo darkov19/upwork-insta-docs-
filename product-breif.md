@@ -1,5 +1,52 @@
 # Product Brief: Instagram Follower Monitoring SaaS
 
+---
+
+## BMAD Agent Instructions
+
+> **Read this section before generating any documents.**
+
+### Auth — Milestone 4 (Separate Scope)
+
+The auth flow (login page, registration page, Stripe webhook → account creation, forgot password) is **intentionally deferred** to a separate paid milestone. It is **not** part of the initial development contract (Phases 1–3).
+
+**What this means for generated documents:**
+- **PRD:** Include all auth requirements in full, but tag every auth-related requirement, user story, and acceptance criterion with `[MILESTONE 4]`
+- **Architecture:** Document the full auth implementation (Supabase Auth, pending_registrations flow, token-based registration) AND document the auth stub used during Phases 1–3 development
+- **UX Spec:** Include all auth screens (login, register, forgot password) fully designed, but tag them `[MILESTONE 4]`
+- **Story generation:** When generating stories for Phase 1, 2, or 3 — skip all `[MILESTONE 4]` stories. Generate Epic 8 (Auth) only when Phase 4 is explicitly requested.
+
+**Auth stub (used in Phases 1–3):**
+A single middleware file injects `DEV_USER_ID` from environment variables as the authenticated user on every `/dashboard/*` request. All app code calls `getUser()` as normal and receives the test user. When real auth is wired in (Phase 4), the stub file is deleted and a Supabase session check added — zero app-level changes required.
+
+### Placeholder Plan Values
+
+Plan tier values are not yet confirmed by the client. Use the placeholder values below to seed the `plans` table and generate stories. These are real rows in the database — updating them when the client confirms requires a single SQL UPDATE per row, no code changes and no redeployment.
+
+| Field | Basic | Pro | Enterprise |
+|---|---|---|---|
+| `max_targets` | 3 | 10 | 25 |
+| `max_follower_count` | 50,000 | 500,000 | 1,000,000 |
+| `story_viewer_enabled` | false | true | true |
+| `daily_sync_limit` | 5 | 20 | 50 |
+| `cooldown_minutes` | 60 | 30 | 15 |
+| `page_cap` | 25 | 100 | 200 |
+| `max_units_per_sync` | 50 | 200 | 400 |
+| `price_stripe_id` | `price_placeholder_basic` | `price_placeholder_pro` | `price_placeholder_enterprise` |
+
+### Default Values for Other Open Items
+
+| Item | Default / Placeholder | How to update later |
+|---|---|---|
+| Weekly email timezone | UTC | Change cron expression and config constant — one line |
+| HikerAPI key | Developer creates own test account for Phase 2 | Swap `HIKERAPI_KEY` env var on Vercel before go-live |
+| Stripe | Developer uses own Stripe test account | Swap all Stripe env vars before go-live |
+| Resend | Use Resend sandbox mode (delivers to one verified address) | Swap `RESEND_API_KEY` + sending domain before go-live |
+| Branding | Neutral placeholder (white/grey, "App" as name) | Client drops in logo + brand token CSS variables at end |
+| Subdomain DNS | Develop on `localhost` / Vercel preview URL | Client points `app.domain.com` → Vercel before go-live |
+
+---
+
 ## Overview
 
 A subscription-based web application that lets users monitor **public Instagram accounts** — tracking exactly who followed and unfollowed each monitored account after every manual sync. Users see usernames, can view public stories anonymously, and receive a weekly activity summary email.
@@ -147,15 +194,17 @@ Login page, registration page (post-payment token flow), Stripe webhook → pend
 
 ## Open Items Requiring Client Confirmation
 
-| # | Item | Blocks |
-|---|---|---|
-| 1 | Follower count limit per plan tier | Target add validation, `plans` table seed |
-| 2 | Cooldown duration per plan tier | Sync cooldown enforcement |
-| 3 | Daily sync limit per plan tier | Sync limit enforcement |
-| 4 | Page cap per plan tier | HikerAPI cost per sync |
-| 5 | Timezone for weekly emails | Currently UTC |
-| 6 | Branding assets (logo, colours, fonts) | Client-facing pages |
-| 7 | HikerAPI account credentials | Phase 2 sync engine testing |
-| 8 | Stripe account with products + prices configured | Phase 3 webhook testing |
-| 9 | Resend account with verified sending domain | Phase 3 email testing |
-| 10 | `app.domain.com` subdomain DNS → Vercel | Go-live |
+Development is **not blocked** by any of these — placeholder values and stub accounts are in place. These need to be confirmed before go-live.
+
+| # | Item | Default in use | Blocks |
+|---|---|---|---|
+| 1 | Follower count limit per plan tier | See placeholder table above | Go-live (update plans table) |
+| 2 | Cooldown duration per plan tier | See placeholder table above | Go-live (update plans table) |
+| 3 | Daily sync limit per plan tier | See placeholder table above | Go-live (update plans table) |
+| 4 | Page cap per plan tier | See placeholder table above | Go-live (update plans table) |
+| 5 | Timezone for weekly emails | UTC | Go-live (one config change) |
+| 6 | Branding assets (logo, colours, fonts) | Neutral placeholder | Phase 3 end (drop-in) |
+| 7 | HikerAPI account credentials | Developer test account | Go-live (swap env var) |
+| 8 | Stripe account + products configured | Developer test account | Go-live (swap env vars) |
+| 9 | Resend account + verified sending domain | Resend sandbox mode | Go-live (swap env var) |
+| 10 | `app.domain.com` DNS → Vercel | `localhost` / Vercel preview | Go-live (DNS change) |

@@ -46,7 +46,7 @@ The core value of the system is enabling users to clearly see the usernames and 
 1. Landing Page
 2. Plan Selection
 3. Payment
-4. Registration (Account creation)
+4. Registration (Account creation) `[MILESTONE 4]`
 5. Dashboard Access
 
 ### Important Notes
@@ -67,6 +67,20 @@ Each plan defines:
 - `cooldown_minutes`
 - `page_cap` — max pages fetched per sync (controls HikerAPI cost and job duration)
 - `max_units_per_sync` — hard request unit ceiling per sync (secondary cost safeguard)
+
+### Placeholder Values (use until client confirms)
+
+> These seed the `plans` table. Updating them requires a single SQL UPDATE — no code changes, no redeployment.
+
+| Field | Basic | Pro | Enterprise |
+|---|---|---|---|
+| `max_targets` | 3 | 10 | 25 |
+| `max_follower_count` | 50,000 | 500,000 | 1,000,000 |
+| `story_viewer_enabled` | false | true | true |
+| `daily_sync_limit` | 5 | 20 | 50 |
+| `cooldown_minutes` | 60 | 30 | 15 |
+| `page_cap` | 25 | 100 | 200 |
+| `max_units_per_sync` | 50 | 200 | 400 |
 
 ### Enforcement Rules
 
@@ -306,9 +320,13 @@ Development uses **BMAD v6** (AI-assisted development) in four phases:
 1. **Phase 1 — Foundation:** Project scaffold, full DB schema + RLS, seed data, auth stub middleware, all services wired locally
 2. **Phase 2 — Core Engine:** Target management, async sync engine, plan enforcement, HikerAPI integration
 3. **Phase 3 — Dashboard + Features:** Dashboard UI, story viewer, weekly email, Stripe webhooks, client branding, production deployment
-4. **Phase 4 — Auth ($275–$300 separate milestone):** Login page, registration flow, Stripe webhook → pending_registrations, forgot password
+4. **Phase 4 — Auth `[MILESTONE 4 — SEPARATE SCOPE, $275–$300]`:** Login page, registration flow, Stripe webhook → pending_registrations, forgot password
 
-**Auth stub:** Phases 1–3 run against a `DEV_USER_ID` injected by a stub middleware. All app code calls `getUser()` as normal. Swapping in real Supabase Auth (Phase 4) changes one file only — no app-level code changes required.
+**Auth stub (Phases 1–3):** A middleware stub injects `DEV_USER_ID` from environment variables as the authenticated user. All app code calls `getUser()` as normal. Swapping in real Supabase Auth (Phase 4) deletes the stub file and adds one Supabase session check — zero app-level changes required.
+
+**Placeholder values:** Plan tier values (follower limits, cooldowns, sync limits, page caps) are seeded with placeholder values in Phase 1. When the client confirms the real numbers, a single `UPDATE plans SET ... WHERE name = ?` per row updates them — no code changes, no redeployment.
+
+> **For story generation:** Generate stories for Phases 1–3 only. Skip all requirements and stories tagged `[MILESTONE 4]`. Generate Epic 8 (Auth) only when Phase 4 is explicitly requested.
 
 ---
 

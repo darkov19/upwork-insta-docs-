@@ -111,6 +111,15 @@ plans (
 )
 ```
 
+**Placeholder seed data** (use until client confirms real values — update with a single `UPDATE plans SET ... WHERE name = ?`, no code changes needed):
+
+```sql
+INSERT INTO plans (name, max_targets, max_follower_count, story_viewer_enabled, daily_sync_limit, cooldown_minutes, page_cap, max_units_per_sync, price_stripe_id) VALUES
+  ('Basic',      3,  50000,   false, 5,  60, 25,  50,  'price_placeholder_basic'),
+  ('Pro',        10, 500000,  true,  20, 30, 100, 200, 'price_placeholder_pro'),
+  ('Enterprise', 25, 1000000, true,  50, 15, 200, 400, 'price_placeholder_enterprise');
+```
+
 ### `subscriptions`
 One active subscription per user.
 
@@ -553,6 +562,57 @@ With Inngest in the stack, auto sync at 1000 users works cleanly:
 | Stripe | % per txn | % per txn | % per txn |
 | HikerAPI | Variable | Variable | Variable (higher) |
 | **Fixed monthly** | **$0** | **$45** | **~$97** |
+
+---
+
+## Auth Stub — Phases 1–3 Development Approach `[MILESTONE 4]`
+
+Auth is deferred to a separate milestone. Phases 1–3 use a stub middleware so development is not blocked.
+
+### Stub Implementation
+
+```typescript
+// middleware.ts (stub — replaced in Phase 4)
+export function middleware(request: NextRequest) {
+  const devUserId = process.env.DEV_USER_ID
+  const response = NextResponse.next()
+  response.headers.set('x-user-id', devUserId)
+  return response
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/api/:path*']
+}
+```
+
+```typescript
+// lib/auth.ts — called by all API routes and server components (unchanged between stub and real)
+export async function getUser() {
+  // Phase 1-3: reads from header set by stub middleware
+  // Phase 4: replaced with supabase.auth.getUser() session check
+}
+```
+
+**Setup required once (Phase 1):**
+- Create `dev@test.com` user in Supabase Auth dashboard
+- Seed one `subscriptions` row for that user pointing to the Pro plan
+- Set `DEV_USER_ID=<that-user-uuid>` in `.env.local`
+
+**Phase 4 swap:** Delete stub `middleware.ts`, replace `getUser()` with `supabase.auth.getUser()`. All RLS policies, API routes, and server components remain unchanged because they already call `getUser()` — the swap is invisible to the rest of the app.
+
+### Real Auth Implementation `[MILESTONE 4]`
+
+When Phase 4 is triggered, the following are built:
+
+| Route / Component | Description |
+|---|---|
+| `/login` | Email/password form, `signInWithPassword`, redirect to `/dashboard` |
+| `/register?token=uuid` | Email pre-filled read-only, password form, token validation, atomic account creation |
+| `POST /api/webhook` | `checkout.session.completed` → insert `pending_registrations` + async registration email |
+| `POST /api/resend-registration` | Re-issue token for paid users whose link expired |
+| Forgot password | Supabase built-in reset flow wired to a UI page |
+
+See Auth & Payment Flow section below for the full webhook + registration sequence.
 
 ---
 
